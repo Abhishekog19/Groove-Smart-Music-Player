@@ -1,0 +1,4248 @@
+{
+  "data": {
+    "playlistV2": {
+      "__typename": "Playlist",
+      "content": {
+        "__typename": "PlaylistItemsPage",
+        "items": [
+          {
+            "addedAt": {
+              "isoString": "2026-03-09T04:10:15Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Pritam"
+                        },
+                        "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02650fd85c3e39008908799b2f",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851650fd85c3e39008908799b2f",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273650fd85c3e39008908799b2f",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Phata Poster Nikhla Hero (Original Motion Picture Soundtrack)",
+                  "uri": "spotify:album:2ADyLRU2KWshFA02symTDr"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Mika Singh"
+                      },
+                      "uri": "spotify:artist:5T2I75UlGBcWd5nVyfmL13"
+                    },
+                    {
+                      "profile": {
+                        "name": "Pritam"
+                      },
+                      "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 1
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 265529
+                },
+                "mediaType": "AUDIO",
+                "name": "Tu Mere Agal Bagal Hai",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "15564865",
+                "trackNumber": 10,
+                "uri": "spotify:track:1zFYN6cwncUvHMrdFilfNd"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 265
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_VIDEO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Phata Poster Nikhla Hero (Original Motion Picture Soundtrack)"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2013-09-20",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:2ADyLRU2KWshFA02symTDr"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Mika Singh",
+                        "uri": "spotify:artist:5T2I75UlGBcWd5nVyfmL13"
+                      },
+                      {
+                        "name": "Pritam",
+                        "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                      }
+                    ],
+                    "totalCount": 2
+                  },
+                  "description": "",
+                  "name": "Tu Mere Agal Bagal Hai",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:1zFYN6cwncUvHMrdFilfNd",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": {
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 360,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab6742d3000052b73e06d293b880bfdc62a5ccd6"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 720,
+                            "maxWidth": 1280,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab6742d3000053b73e06d293b880bfdc62a5ccd6"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 255,
+                        "green": 188,
+                        "red": 146
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 190,
+                          "green": 70,
+                          "red": 14
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 146,
+                          "green": 22,
+                          "red": 0
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 208,
+                          "red": 175
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 150,
+                          "green": 27,
+                          "red": 0
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 193,
+                          "green": 73,
+                          "red": 27
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 208,
+                          "red": 175
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 192,
+                          "green": 72,
+                          "red": 16
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 149,
+                          "green": 26,
+                          "red": 0
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02650fd85c3e39008908799b2f"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00004851650fd85c3e39008908799b2f"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273650fd85c3e39008908799b2f"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "710b2f4cf8603c07"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-09T04:22:57Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Sachin-Jigar"
+                        },
+                        "uri": "spotify:artist:1mBydYMVBECdDmMfE2sEUO"
+                      },
+                      {
+                        "profile": {
+                          "name": "Priya Saraiya"
+                        },
+                        "uri": "spotify:artist:6q29t5RuXxlBuqIZsOMQss"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02cab73e6ac9bf4bf3c6931570",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851cab73e6ac9bf4bf3c6931570",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273cab73e6ac9bf4bf3c6931570",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Ramaiya Vastavaiya (Original Motion Picture Soundtrack)",
+                  "uri": "spotify:album:1VgXTSQsIrRn150j5MJrxR"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Sachin-Jigar"
+                      },
+                      "uri": "spotify:artist:1mBydYMVBECdDmMfE2sEUO"
+                    },
+                    {
+                      "profile": {
+                        "name": "Mika Singh"
+                      },
+                      "uri": "spotify:artist:5T2I75UlGBcWd5nVyfmL13"
+                    },
+                    {
+                      "profile": {
+                        "name": "Neha Kakkar"
+                      },
+                      "uri": "spotify:artist:5f4QpKfy7ptCHwTqspnSJI"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 1
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 217000
+                },
+                "mediaType": "AUDIO",
+                "name": "Jadoo Ki Jhappi",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "21363922",
+                "trackNumber": 5,
+                "uri": "spotify:track:1kptwDq9gbWOdmTm6C2bCm"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 217
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_VIDEO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Ramaiya Vastavaiya (Original Motion Picture Soundtrack)"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2013-07-19",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:1VgXTSQsIrRn150j5MJrxR"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Sachin-Jigar",
+                        "uri": "spotify:artist:1mBydYMVBECdDmMfE2sEUO"
+                      },
+                      {
+                        "name": "Mika Singh",
+                        "uri": "spotify:artist:5T2I75UlGBcWd5nVyfmL13"
+                      },
+                      {
+                        "name": "Neha Kakkar",
+                        "uri": "spotify:artist:5f4QpKfy7ptCHwTqspnSJI"
+                      }
+                    ],
+                    "totalCount": 3
+                  },
+                  "description": "",
+                  "name": "Jadoo Ki Jhappi",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:1kptwDq9gbWOdmTm6C2bCm",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": {
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 360,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab6742d3000052b75b02fc12558f81a186787df5"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 720,
+                            "maxWidth": 1280,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab6742d3000053b75b02fc12558f81a186787df5"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 128,
+                        "green": 164,
+                        "red": 255
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 29,
+                          "red": 155
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 97
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 165,
+                          "green": 191,
+                          "red": 255
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 101
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 41,
+                          "green": 52,
+                          "red": 147
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 165,
+                          "green": 191,
+                          "red": 255
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 40,
+                          "green": 96,
+                          "red": 240
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 66,
+                          "red": 209
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02cab73e6ac9bf4bf3c6931570"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00004851cab73e6ac9bf4bf3c6931570"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273cab73e6ac9bf4bf3c6931570"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "abf12e086795a618"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-09T04:26:30Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Sajid-Wajid"
+                        },
+                        "uri": "spotify:artist:3qdu3XhzSzkRhbwdFKnSuw"
+                      },
+                      {
+                        "profile": {
+                          "name": "Anand Raj Anand"
+                        },
+                        "uri": "spotify:artist:5ixQ5hSywFLUaxoaA0uVaH"
+                      },
+                      {
+                        "profile": {
+                          "name": "Himesh Reshammiya"
+                        },
+                        "uri": "spotify:artist:0sSxphmGskGCKlwB9xa6WU"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e021f1bff56e0bf61f2f66de392",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d000048511f1bff56e0bf61f2f66de392",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b2731f1bff56e0bf61f2f66de392",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Welcome (Original Motion Picture Soundtrack)",
+                  "uri": "spotify:album:34SE86n8INwLrMts8z1SaT"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Anand Raj Anand"
+                      },
+                      "uri": "spotify:artist:5ixQ5hSywFLUaxoaA0uVaH"
+                    },
+                    {
+                      "profile": {
+                        "name": "Shweta Pandit"
+                      },
+                      "uri": "spotify:artist:4L0JycQCCwKksT3G5SVApu"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 1
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 301224
+                },
+                "mediaType": "AUDIO",
+                "name": "Kiya Kiya",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "111363284",
+                "trackNumber": 6,
+                "uri": "spotify:track:0YCPCY9WhQFMFtoSpj6dhL"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 301
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Welcome (Original Motion Picture Soundtrack)"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2007-11-01",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:4a8DFO3D8w3FNkU65GgDMh"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Anand Raj Anand",
+                        "uri": "spotify:artist:5ixQ5hSywFLUaxoaA0uVaH"
+                      },
+                      {
+                        "name": "Shweta Pandit",
+                        "uri": "spotify:artist:4L0JycQCCwKksT3G5SVApu"
+                      },
+                      {
+                        "name": "Anjaan Sagri",
+                        "uri": "spotify:artist:23CWye1tRIGCvpHVwL2SjO"
+                      }
+                    ],
+                    "totalCount": 3
+                  },
+                  "description": "",
+                  "name": "Kiya Kiya",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:0YCPCY9WhQFMFtoSpj6dhL",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": null,
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 182,
+                        "green": 182,
+                        "red": 201
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 72,
+                          "green": 72,
+                          "red": 88
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 36,
+                          "green": 36,
+                          "red": 50
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 201,
+                          "green": 201,
+                          "red": 220
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 50,
+                          "green": 50,
+                          "red": 65
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 82,
+                          "green": 82,
+                          "red": 98
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 201,
+                          "green": 201,
+                          "red": 220
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 72,
+                          "green": 72,
+                          "red": 88
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 36,
+                          "green": 36,
+                          "red": 50
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0278f17ae0c2997ade3b36d044"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000485178f17ae0c2997ade3b36d044"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b27378f17ae0c2997ade3b36d044"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "f222c2718b454726"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-10T04:22:21Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Pritam"
+                        },
+                        "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e029eb6c1861d8c058e7052df1e",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d000048519eb6c1861d8c058e7052df1e",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b2739eb6c1861d8c058e7052df1e",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Kalank (Original Motion Picture Soundtrack)",
+                  "uri": "spotify:album:6oGrVe1XTTji8TBQh5eJit"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Pritam"
+                      },
+                      "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                    },
+                    {
+                      "profile": {
+                        "name": "Arijit Singh"
+                      },
+                      "uri": "spotify:artist:4YRxDV8wJFPHPTeXepOstw"
+                    },
+                    {
+                      "profile": {
+                        "name": "Neeti Mohan"
+                      },
+                      "uri": "spotify:artist:3ZxZ03fj3tXBZHZWzvaLSM"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 0
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 276959
+                },
+                "mediaType": "AUDIO",
+                "name": "First Class (Kalank)",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "65850524",
+                "trackNumber": 2,
+                "uri": "spotify:track:2EvGNKagKtvFeZMLjOfgDP"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 276
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Kalank (Original Motion Picture Soundtrack)"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2019-04-14",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:6oGrVe1XTTji8TBQh5eJit"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Pritam",
+                        "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                      },
+                      {
+                        "name": "Arijit Singh",
+                        "uri": "spotify:artist:4YRxDV8wJFPHPTeXepOstw"
+                      },
+                      {
+                        "name": "Neeti Mohan",
+                        "uri": "spotify:artist:3ZxZ03fj3tXBZHZWzvaLSM"
+                      }
+                    ],
+                    "totalCount": 3
+                  },
+                  "description": "",
+                  "name": "First Class (Kalank)",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:2EvGNKagKtvFeZMLjOfgDP",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": null,
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 149,
+                        "green": 163,
+                        "red": 254
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 80
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 43,
+                          "green": 52,
+                          "red": 131
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 177,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 80
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 43,
+                          "green": 52,
+                          "red": 131
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 177,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 80
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 43,
+                          "green": 52,
+                          "red": 131
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e029eb6c1861d8c058e7052df1e"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d000048519eb6c1861d8c058e7052df1e"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b2739eb6c1861d8c058e7052df1e"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "c890e06f3c050334"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-10T04:25:19Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Pritam"
+                        },
+                        "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02e810a88d506b30bdc0935247",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851e810a88d506b30bdc0935247",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273e810a88d506b30bdc0935247",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Agent Vinod",
+                  "uri": "spotify:album:2DqQ34i4uuuZWTScsGIgHr"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Pritam"
+                      },
+                      "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                    },
+                    {
+                      "profile": {
+                        "name": "Mika Singh"
+                      },
+                      "uri": "spotify:artist:5T2I75UlGBcWd5nVyfmL13"
+                    },
+                    {
+                      "profile": {
+                        "name": "Amitabh Bhattacharya"
+                      },
+                      "uri": "spotify:artist:2fMqTqiTxUDlmcOEPaQSsx"
+                    },
+                    {
+                      "profile": {
+                        "name": "Nakash Aziz"
+                      },
+                      "uri": "spotify:artist:4kq8z3vydHjPDggxb16ErB"
+                    },
+                    {
+                      "profile": {
+                        "name": "Javed Jaffrey"
+                      },
+                      "uri": "spotify:artist:4G52SGqVJlR6u5DuBgEzYR"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 0
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 247826
+                },
+                "mediaType": "AUDIO",
+                "name": "Pungi",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "62718312",
+                "trackNumber": 4,
+                "uri": "spotify:track:4St20qfnH98z2CEY7Up5yn"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 247
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Agent Vinod"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2012-02-24",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:2DqQ34i4uuuZWTScsGIgHr"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Pritam",
+                        "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                      },
+                      {
+                        "name": "Mika Singh",
+                        "uri": "spotify:artist:5T2I75UlGBcWd5nVyfmL13"
+                      },
+                      {
+                        "name": "Amitabh Bhattacharya",
+                        "uri": "spotify:artist:2fMqTqiTxUDlmcOEPaQSsx"
+                      },
+                      {
+                        "name": "Nakash Aziz",
+                        "uri": "spotify:artist:4kq8z3vydHjPDggxb16ErB"
+                      },
+                      {
+                        "name": "Javed Jaffrey",
+                        "uri": "spotify:artist:4G52SGqVJlR6u5DuBgEzYR"
+                      }
+                    ],
+                    "totalCount": 5
+                  },
+                  "description": "",
+                  "name": "Pungi",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:4St20qfnH98z2CEY7Up5yn",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": null,
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 154,
+                        "green": 162,
+                        "red": 255
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 16,
+                          "green": 0,
+                          "red": 120
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 52,
+                          "green": 52,
+                          "red": 163
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 183,
+                          "green": 189,
+                          "red": 255
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 2,
+                          "green": 0,
+                          "red": 101
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 43,
+                          "green": 52,
+                          "red": 147
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 183,
+                          "green": 189,
+                          "red": 255
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 16,
+                          "green": 0,
+                          "red": 120
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 52,
+                          "green": 52,
+                          "red": 163
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02e810a88d506b30bdc0935247"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00004851e810a88d506b30bdc0935247"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273e810a88d506b30bdc0935247"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "4db94a734f4597a5"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-10T09:32:26Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Shankar-Ehsaan-Loy"
+                        },
+                        "uri": "spotify:artist:0L5GV6LN8SWWUWIdBbTLTZ"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02fb15b0d84124e875b0b0494c",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851fb15b0d84124e875b0b0494c",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273fb15b0d84124e875b0b0494c",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Bunty Aur Babli",
+                  "uri": "spotify:album:5qO12aRQP26eh6XeplVIC9"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Shankar-Ehsaan-Loy"
+                      },
+                      "uri": "spotify:artist:0L5GV6LN8SWWUWIdBbTLTZ"
+                    },
+                    {
+                      "profile": {
+                        "name": "Alisha Chinai"
+                      },
+                      "uri": "spotify:artist:4mBxoO0pAcMbAwuTcrcLMc"
+                    },
+                    {
+                      "profile": {
+                        "name": "Shankar Mahadevan"
+                      },
+                      "uri": "spotify:artist:1SJOL9HJ08YOn92lFcYf8a"
+                    },
+                    {
+                      "profile": {
+                        "name": "Javed Ali"
+                      },
+                      "uri": "spotify:artist:4W91bbPB2CTSsHwt7eqNl7"
+                    },
+                    {
+                      "profile": {
+                        "name": "Gulzar"
+                      },
+                      "uri": "spotify:artist:0yRC5n90spXG0d3aiDQ0vB"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 1
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 482586
+                },
+                "mediaType": "AUDIO",
+                "name": "Kajra Re",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "94761704",
+                "trackNumber": 6,
+                "uri": "spotify:track:72HdutlIHBZJ7WT1xVAAZT"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 482
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_VIDEO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Bunty Aur Babli"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2005-04-15",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:5qO12aRQP26eh6XeplVIC9"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Shankar-Ehsaan-Loy",
+                        "uri": "spotify:artist:0L5GV6LN8SWWUWIdBbTLTZ"
+                      },
+                      {
+                        "name": "Alisha Chinai",
+                        "uri": "spotify:artist:4mBxoO0pAcMbAwuTcrcLMc"
+                      },
+                      {
+                        "name": "Shankar Mahadevan",
+                        "uri": "spotify:artist:1SJOL9HJ08YOn92lFcYf8a"
+                      },
+                      {
+                        "name": "Javed Ali",
+                        "uri": "spotify:artist:4W91bbPB2CTSsHwt7eqNl7"
+                      },
+                      {
+                        "name": "Gulzar",
+                        "uri": "spotify:artist:0yRC5n90spXG0d3aiDQ0vB"
+                      }
+                    ],
+                    "totalCount": 5
+                  },
+                  "description": "",
+                  "name": "Kajra Re",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:72HdutlIHBZJ7WT1xVAAZT",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": {
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 360,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab6742d3000052b7ca12803e21ddf66768d32c45"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 720,
+                            "maxWidth": 1280,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab6742d3000053b7ca12803e21ddf66768d32c45"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 150,
+                        "green": 162,
+                        "red": 255
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 16,
+                          "green": 16,
+                          "red": 120
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 50,
+                          "green": 58,
+                          "red": 160
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 179,
+                          "green": 189,
+                          "red": 255
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 101
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 41,
+                          "green": 52,
+                          "red": 147
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 179,
+                          "green": 189,
+                          "red": 255
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 16,
+                          "green": 16,
+                          "red": 120
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 50,
+                          "green": 58,
+                          "red": 160
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02fb15b0d84124e875b0b0494c"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00004851fb15b0d84124e875b0b0494c"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273fb15b0d84124e875b0b0494c"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "404f638a3ff9cf4c"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-10T16:50:44.542Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Sajid-Wajid"
+                        },
+                        "uri": "spotify:artist:3qdu3XhzSzkRhbwdFKnSuw"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e025f63a32c610dce85cd7887a9",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d000048515f63a32c610dce85cd7887a9",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b2735f63a32c610dce85cd7887a9",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Partner",
+                  "uri": "spotify:album:6UDyVUOga0s9Pu9qvZ5HKJ"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Wajid"
+                      },
+                      "uri": "spotify:artist:6f5kUMXGROFtdAtxXZwing"
+                    },
+                    {
+                      "profile": {
+                        "name": "Labh Janjua"
+                      },
+                      "uri": "spotify:artist:3DWbhNPz642SpTneSTHJv7"
+                    },
+                    {
+                      "profile": {
+                        "name": "Sneha Pant"
+                      },
+                      "uri": "spotify:artist:6MqZjgch4AHGc5f8P1167O"
+                    },
+                    {
+                      "profile": {
+                        "name": "Sajid-Wajid"
+                      },
+                      "uri": "spotify:artist:3qdu3XhzSzkRhbwdFKnSuw"
+                    },
+                    {
+                      "profile": {
+                        "name": "Shabbir Ahmed"
+                      },
+                      "uri": "spotify:artist:6KZ6c43Dnjm6STHZ6avQU1"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 0
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 261013
+                },
+                "mediaType": "AUDIO",
+                "name": "Soni De Nakhre",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "147114248",
+                "trackNumber": 4,
+                "uri": "spotify:track:4tBMbRwLJa5BjwJ6FrBlks"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 261
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Partner"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2007-06-12",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:6UDyVUOga0s9Pu9qvZ5HKJ"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Wajid",
+                        "uri": "spotify:artist:6f5kUMXGROFtdAtxXZwing"
+                      },
+                      {
+                        "name": "Labh Janjua",
+                        "uri": "spotify:artist:3DWbhNPz642SpTneSTHJv7"
+                      },
+                      {
+                        "name": "Sneha Pant",
+                        "uri": "spotify:artist:6MqZjgch4AHGc5f8P1167O"
+                      },
+                      {
+                        "name": "Sajid-Wajid",
+                        "uri": "spotify:artist:3qdu3XhzSzkRhbwdFKnSuw"
+                      },
+                      {
+                        "name": "Shabbir Ahmed",
+                        "uri": "spotify:artist:6KZ6c43Dnjm6STHZ6avQU1"
+                      }
+                    ],
+                    "totalCount": 5
+                  },
+                  "description": "",
+                  "name": "Soni De Nakhre",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:4tBMbRwLJa5BjwJ6FrBlks",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": null,
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 149,
+                        "green": 162,
+                        "red": 255
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 159
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 97
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 179,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 101
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 41,
+                          "green": 52,
+                          "red": 147
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 179,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 48,
+                          "green": 56,
+                          "red": 224
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 4,
+                          "green": 0,
+                          "red": 185
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e025f63a32c610dce85cd7887a9"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d000048515f63a32c610dce85cd7887a9"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b2735f63a32c610dce85cd7887a9"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "411a2bb7aeb6b237"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-11T03:52:28Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Pritam"
+                        },
+                        "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02707ea5b8023ac77d31756ed4",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851707ea5b8023ac77d31756ed4",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273707ea5b8023ac77d31756ed4",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Yeh Jawaani Hai Deewani",
+                  "uri": "spotify:album:2Lxoc72vRTGdQfMvj7Ovi1"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Pritam"
+                      },
+                      "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                    },
+                    {
+                      "profile": {
+                        "name": "Arijit Singh"
+                      },
+                      "uri": "spotify:artist:4YRxDV8wJFPHPTeXepOstw"
+                    },
+                    {
+                      "profile": {
+                        "name": "Sunidhi Chauhan"
+                      },
+                      "uri": "spotify:artist:3eDT9fwXKuHWFvgZaaYC5v"
+                    },
+                    {
+                      "profile": {
+                        "name": "Kumaar"
+                      },
+                      "uri": "spotify:artist:0m3D4grap8VFSzbJMqgNVk"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 0
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 260552
+                },
+                "mediaType": "AUDIO",
+                "name": "Dilliwaali Girlfriend",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "136689416",
+                "trackNumber": 5,
+                "uri": "spotify:track:3W1XPf7mvuQcWQB7U7MbTM"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 260
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Yeh Jawaani Hai Deewani"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2013-03-30",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:2Lxoc72vRTGdQfMvj7Ovi1"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Pritam",
+                        "uri": "spotify:artist:1wRPtKGflJrBx9BmLsSwlU"
+                      },
+                      {
+                        "name": "Arijit Singh",
+                        "uri": "spotify:artist:4YRxDV8wJFPHPTeXepOstw"
+                      },
+                      {
+                        "name": "Sunidhi Chauhan",
+                        "uri": "spotify:artist:3eDT9fwXKuHWFvgZaaYC5v"
+                      },
+                      {
+                        "name": "Kumaar",
+                        "uri": "spotify:artist:0m3D4grap8VFSzbJMqgNVk"
+                      }
+                    ],
+                    "totalCount": 4
+                  },
+                  "description": "",
+                  "name": "Dilliwaali Girlfriend",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:3W1XPf7mvuQcWQB7U7MbTM",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": null,
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 156,
+                        "green": 169,
+                        "red": 240
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 16,
+                          "green": 24,
+                          "red": 80
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 53,
+                          "green": 63,
+                          "red": 123
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 176,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 16,
+                          "green": 24,
+                          "red": 80
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 53,
+                          "green": 63,
+                          "red": 123
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 176,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 16,
+                          "green": 24,
+                          "red": 80
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 53,
+                          "green": 63,
+                          "red": 123
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02707ea5b8023ac77d31756ed4"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00004851707ea5b8023ac77d31756ed4"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273707ea5b8023ac77d31756ed4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "0be66cea4087b4e4"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-23T04:58:25Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Shankar-Ehsaan-Loy"
+                        },
+                        "uri": "spotify:artist:0L5GV6LN8SWWUWIdBbTLTZ"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02c7b8d39b1e113845906984ab",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851c7b8d39b1e113845906984ab",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273c7b8d39b1e113845906984ab",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "2 States",
+                  "uri": "spotify:album:4PmYasI57t8uJJAOt0zKud"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Benny Dayal"
+                      },
+                      "uri": "spotify:artist:61if35zz1W11GejEkxTLEQ"
+                    },
+                    {
+                      "profile": {
+                        "name": "Shankar-Ehsaan-Loy"
+                      },
+                      "uri": "spotify:artist:0L5GV6LN8SWWUWIdBbTLTZ"
+                    },
+                    {
+                      "profile": {
+                        "name": "Amitabh Bhattacharya"
+                      },
+                      "uri": "spotify:artist:2fMqTqiTxUDlmcOEPaQSsx"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 0
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 288462
+                },
+                "mediaType": "AUDIO",
+                "name": "Locha-E-Ulfat",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "78969180",
+                "trackNumber": 2,
+                "uri": "spotify:track:3V3QbgrOZKtFv5MXzAAdZr"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 288
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "2 States"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2014-03-14",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:4PmYasI57t8uJJAOt0zKud"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Benny Dayal",
+                        "uri": "spotify:artist:61if35zz1W11GejEkxTLEQ"
+                      },
+                      {
+                        "name": "Shankar-Ehsaan-Loy",
+                        "uri": "spotify:artist:0L5GV6LN8SWWUWIdBbTLTZ"
+                      },
+                      {
+                        "name": "Amitabh Bhattacharya",
+                        "uri": "spotify:artist:2fMqTqiTxUDlmcOEPaQSsx"
+                      }
+                    ],
+                    "totalCount": 3
+                  },
+                  "description": "",
+                  "name": "Locha-E-Ulfat",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:3V3QbgrOZKtFv5MXzAAdZr",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": null,
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 112,
+                        "green": 200,
+                        "red": 248
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 75,
+                          "red": 114
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 42,
+                          "red": 76
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 129,
+                          "green": 200,
+                          "red": 239
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 44,
+                          "red": 79
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 39,
+                          "green": 78,
+                          "red": 115
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 129,
+                          "green": 200,
+                          "red": 239
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 54,
+                          "green": 145,
+                          "red": 191
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 18,
+                          "green": 120,
+                          "red": 165
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02c7b8d39b1e113845906984ab"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00004851c7b8d39b1e113845906984ab"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b273c7b8d39b1e113845906984ab"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "b171194f3470f893"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-23T05:05:51Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Vishal-Shekhar"
+                        },
+                        "uri": "spotify:artist:6Mv8GjQa7LKUGCAqa9qqdb"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02058494835ee23ad6104f81f2",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851058494835ee23ad6104f81f2",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273058494835ee23ad6104f81f2",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Bang Bang (Original Motion Picture Soundtrack)",
+                  "uri": "spotify:album:52gSIQvhLN9EeGNtHJELEu"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Harshdeep Kaur"
+                      },
+                      "uri": "spotify:artist:3xU8YsNNkmWSPewlB18NUz"
+                    },
+                    {
+                      "profile": {
+                        "name": "Benny Dayal"
+                      },
+                      "uri": "spotify:artist:61if35zz1W11GejEkxTLEQ"
+                    },
+                    {
+                      "profile": {
+                        "name": "Vishal-Shekhar"
+                      },
+                      "uri": "spotify:artist:6Mv8GjQa7LKUGCAqa9qqdb"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 0
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 272112
+                },
+                "mediaType": "AUDIO",
+                "name": "Uff",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "39708438",
+                "trackNumber": 3,
+                "uri": "spotify:track:06g9b0J7o8tULKGPZm0wFK"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 272
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Bang Bang (Original Motion Picture Soundtrack)"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2014-09-15",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:52gSIQvhLN9EeGNtHJELEu"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Harshdeep Kaur",
+                        "uri": "spotify:artist:3xU8YsNNkmWSPewlB18NUz"
+                      },
+                      {
+                        "name": "Benny Dayal",
+                        "uri": "spotify:artist:61if35zz1W11GejEkxTLEQ"
+                      },
+                      {
+                        "name": "Vishal-Shekhar",
+                        "uri": "spotify:artist:6Mv8GjQa7LKUGCAqa9qqdb"
+                      }
+                    ],
+                    "totalCount": 3
+                  },
+                  "description": "",
+                  "name": "Uff",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:06g9b0J7o8tULKGPZm0wFK",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": null,
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 225,
+                        "green": 201,
+                        "red": 86
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 109,
+                          "green": 90,
+                          "red": 0
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 72,
+                          "green": 54,
+                          "red": 0
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 242,
+                          "green": 219,
+                          "red": 117
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 75,
+                          "green": 57,
+                          "red": 0
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 111,
+                          "green": 91,
+                          "red": 42
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 242,
+                          "green": 219,
+                          "red": 117
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 190,
+                          "green": 166,
+                          "red": 41
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 163,
+                          "green": 139,
+                          "red": 0
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02058494835ee23ad6104f81f2"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00004851058494835ee23ad6104f81f2"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273058494835ee23ad6104f81f2"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "23df56e6fa2b8654"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-26T04:56:09Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Vishal-Shekhar"
+                        },
+                        "uri": "spotify:artist:6Mv8GjQa7LKUGCAqa9qqdb"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e021992dd7b33baf5887ea4a1ec",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d000048511992dd7b33baf5887ea4a1ec",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b2731992dd7b33baf5887ea4a1ec",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "I Hate Luv Storys (Original Motion Picture Soundtrack)",
+                  "uri": "spotify:album:4SPHfSWibeoFCSdR4vd5QL"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Vishal-Shekhar"
+                      },
+                      "uri": "spotify:artist:6Mv8GjQa7LKUGCAqa9qqdb"
+                    },
+                    {
+                      "profile": {
+                        "name": "Vishal Dadlani"
+                      },
+                      "uri": "spotify:artist:6CXEwIaXYfVJ84biCxqc9k"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 1
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 285213
+                },
+                "mediaType": "AUDIO",
+                "name": "I Hate Luv Storys",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "58973427",
+                "trackNumber": 3,
+                "uri": "spotify:track:4zUPL2OPTO3hgNhjaA1Rjn"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 285
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_VIDEO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "I Hate Luv Storys (Original Motion Picture Soundtrack)"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2010-05-25",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:4SPHfSWibeoFCSdR4vd5QL"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Vishal-Shekhar",
+                        "uri": "spotify:artist:6Mv8GjQa7LKUGCAqa9qqdb"
+                      },
+                      {
+                        "name": "Vishal Dadlani",
+                        "uri": "spotify:artist:6CXEwIaXYfVJ84biCxqc9k"
+                      }
+                    ],
+                    "totalCount": 2
+                  },
+                  "description": "",
+                  "name": "I Hate Luv Storys",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:4zUPL2OPTO3hgNhjaA1Rjn",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": {
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 360,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab6742d3000052b73c0d5f51bf8170d9f049dc65"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 720,
+                            "maxWidth": 1280,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab6742d3000053b73c0d5f51bf8170d9f049dc65"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 149,
+                        "green": 162,
+                        "red": 255
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 159
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 97
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 179,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 101
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 41,
+                          "green": 52,
+                          "red": 147
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 179,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 48,
+                          "green": 56,
+                          "red": 216
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 5,
+                          "green": 0,
+                          "red": 177
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e021992dd7b33baf5887ea4a1ec"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d000048511992dd7b33baf5887ea4a1ec"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-fa.spotifycdn.com/image/ab67616d0000b2731992dd7b33baf5887ea4a1ec"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "956ffb0fd9163c81"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-26T15:05:53Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Salim–Sulaiman"
+                        },
+                        "uri": "spotify:artist:6ohaQzKaXrobAL8paLSaxq"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02ab14def19a5dc364cb191342",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851ab14def19a5dc364cb191342",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273ab14def19a5dc364cb191342",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Ladies vs Ricky Bahl",
+                  "uri": "spotify:album:4ZMpui2jignLsSwjmNfIYP"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Salim–Sulaiman"
+                      },
+                      "uri": "spotify:artist:6ohaQzKaXrobAL8paLSaxq"
+                    },
+                    {
+                      "profile": {
+                        "name": "Benny Dayal"
+                      },
+                      "uri": "spotify:artist:61if35zz1W11GejEkxTLEQ"
+                    },
+                    {
+                      "profile": {
+                        "name": "Ranveer Singh"
+                      },
+                      "uri": "spotify:artist:0lMa3YTHqQnDDTBaxAV7LK"
+                    },
+                    {
+                      "profile": {
+                        "name": "Amitabh Bhattacharya"
+                      },
+                      "uri": "spotify:artist:2fMqTqiTxUDlmcOEPaQSsx"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 1
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 277760
+                },
+                "mediaType": "AUDIO",
+                "name": "Aadat Se Majboor",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "55394923",
+                "trackNumber": 1,
+                "uri": "spotify:track:7CDP4uXu6mkBDzaTOx9yTS"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 277
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_VIDEO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Ladies vs Ricky Bahl"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2011-11-09",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:4ZMpui2jignLsSwjmNfIYP"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Salim–Sulaiman",
+                        "uri": "spotify:artist:6ohaQzKaXrobAL8paLSaxq"
+                      },
+                      {
+                        "name": "Benny Dayal",
+                        "uri": "spotify:artist:61if35zz1W11GejEkxTLEQ"
+                      },
+                      {
+                        "name": "Ranveer Singh",
+                        "uri": "spotify:artist:0lMa3YTHqQnDDTBaxAV7LK"
+                      },
+                      {
+                        "name": "Amitabh Bhattacharya",
+                        "uri": "spotify:artist:2fMqTqiTxUDlmcOEPaQSsx"
+                      }
+                    ],
+                    "totalCount": 4
+                  },
+                  "description": "",
+                  "name": "Aadat Se Majboor",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:7CDP4uXu6mkBDzaTOx9yTS",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": {
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 360,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab6742d3000052b77a31881a560eae7874c05e2a"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 720,
+                            "maxWidth": 1280,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab6742d3000053b77a31881a560eae7874c05e2a"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 149,
+                        "green": 162,
+                        "red": 255
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 159
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 97
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 179,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 101
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 41,
+                          "green": 52,
+                          "red": 147
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 179,
+                          "green": 190,
+                          "red": 255
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 32,
+                          "green": 32,
+                          "red": 224
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 0,
+                          "green": 0,
+                          "red": 176
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02ab14def19a5dc364cb191342"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00004851ab14def19a5dc364cb191342"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273ab14def19a5dc364cb191342"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "a7ad8040a37f964a"
+          },
+          {
+            "addedAt": {
+              "isoString": "2026-03-27T02:42:28Z"
+            },
+            "addedBy": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            },
+            "attributes": [],
+            "itemV2": {
+              "__typename": "TrackResponseWrapper",
+              "data": {
+                "__typename": "Track",
+                "albumOfTrack": {
+                  "artists": {
+                    "items": [
+                      {
+                        "profile": {
+                          "name": "Shankar-Ehsaan-Loy"
+                        },
+                        "uri": "spotify:artist:0L5GV6LN8SWWUWIdBbTLTZ"
+                      }
+                    ]
+                  },
+                  "coverArt": {
+                    "sources": [
+                      {
+                        "height": 300,
+                        "url": "https://i.scdn.co/image/ab67616d00001e02086334217996ebabea5bef33",
+                        "width": 300
+                      },
+                      {
+                        "height": 64,
+                        "url": "https://i.scdn.co/image/ab67616d00004851086334217996ebabea5bef33",
+                        "width": 64
+                      },
+                      {
+                        "height": 640,
+                        "url": "https://i.scdn.co/image/ab67616d0000b273086334217996ebabea5bef33",
+                        "width": 640
+                      }
+                    ]
+                  },
+                  "name": "Patiala House",
+                  "uri": "spotify:album:1DgIFH0yAPRPGBeCiJBvDv"
+                },
+                "artists": {
+                  "items": [
+                    {
+                      "profile": {
+                        "name": "Mahalakshmi Iyer"
+                      },
+                      "uri": "spotify:artist:0Yb0T3wUUNiIvHjqnfkbuH"
+                    },
+                    {
+                      "profile": {
+                        "name": "Hard Kaur"
+                      },
+                      "uri": "spotify:artist:1Xoow41U5fn5DwlMlYt7Gw"
+                    },
+                    {
+                      "profile": {
+                        "name": "Jassi"
+                      },
+                      "uri": "spotify:artist:0QicOPoGCIHxlRFG0I4r9H"
+                    }
+                  ]
+                },
+                "associationsV3": {
+                  "audioAssociations": {
+                    "__typename": "TrackAudioAssociationPage",
+                    "items": []
+                  },
+                  "videoAssociations": {
+                    "totalCount": 0
+                  }
+                },
+                "contentRating": {
+                  "label": "NONE"
+                },
+                "discNumber": 1,
+                "trackDuration": {
+                  "totalMilliseconds": 304466
+                },
+                "mediaType": "AUDIO",
+                "name": "Laung Da Lashkara",
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "playcount": "88233198",
+                "trackNumber": 1,
+                "uri": "spotify:track:5pQODzb8j3xMQ1qvrQXJvo"
+              }
+            },
+            "itemV3": {
+              "__typename": "EntityResponseWrapper",
+              "data": {
+                "__typename": "Entity",
+                "consumptionExperienceTrait": {
+                  "__typename": "ConsumptionExperienceTrait",
+                  "contentRatings": [],
+                  "duration": {
+                    "nanoSeconds": 0,
+                    "seconds": 304
+                  },
+                  "formats": [
+                    "FORMAT_AUDIO",
+                    "FORMAT_LOSSLESS"
+                  ]
+                },
+                "identityTrait": {
+                  "__typename": "IdentityTrait",
+                  "contentHierarchyParent": {
+                    "__typename": "Entity",
+                    "identityTrait": {
+                      "__typename": "IdentityTrait",
+                      "name": "Patiala House"
+                    },
+                    "publishingMetadataTrait": {
+                      "__typename": "PublishingMetadataTrait",
+                      "firstPublishedAt": {
+                        "isoString": "2011-01-07",
+                        "precision": "DAY"
+                      }
+                    },
+                    "uri": "spotify:album:1DgIFH0yAPRPGBeCiJBvDv"
+                  },
+                  "contributors": {
+                    "items": [
+                      {
+                        "name": "Mahalakshmi Iyer",
+                        "uri": "spotify:artist:0Yb0T3wUUNiIvHjqnfkbuH"
+                      },
+                      {
+                        "name": "Hard Kaur",
+                        "uri": "spotify:artist:1Xoow41U5fn5DwlMlYt7Gw"
+                      },
+                      {
+                        "name": "Jassi",
+                        "uri": "spotify:artist:0QicOPoGCIHxlRFG0I4r9H"
+                      }
+                    ],
+                    "totalCount": 3
+                  },
+                  "description": "",
+                  "name": "Laung Da Lashkara",
+                  "type": "Song"
+                },
+                "playability": {
+                  "playable": true,
+                  "reason": "PLAYABLE"
+                },
+                "uri": "spotify:track:5pQODzb8j3xMQ1qvrQXJvo",
+                "visualIdentityTrait": {
+                  "__typename": "VisualIdentityTrait",
+                  "sixteenByNineCoverImage": null,
+                  "squareCoverImage": {
+                    "extractedColorSet": {
+                      "encoreBaseSetTextColor": {
+                        "alpha": 255,
+                        "blue": 182,
+                        "green": 159,
+                        "red": 255
+                      },
+                      "highContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 63,
+                          "green": 0,
+                          "red": 156
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 31,
+                          "green": 0,
+                          "red": 96
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 203,
+                          "green": 187,
+                          "red": 255
+                        }
+                      },
+                      "higherContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 33,
+                          "green": 0,
+                          "red": 100
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 69,
+                          "green": 51,
+                          "red": 146
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 96,
+                          "green": 215,
+                          "red": 30
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 203,
+                          "green": 187,
+                          "red": 255
+                        }
+                      },
+                      "minContrast": {
+                        "backgroundBase": {
+                          "alpha": 255,
+                          "blue": 112,
+                          "green": 48,
+                          "red": 232
+                        },
+                        "backgroundTintedBase": {
+                          "alpha": 255,
+                          "blue": 80,
+                          "green": 0,
+                          "red": 191
+                        },
+                        "textBase": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textBrightAccent": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        },
+                        "textSubdued": {
+                          "alpha": 255,
+                          "blue": 255,
+                          "green": 255,
+                          "red": 255
+                        }
+                      }
+                    },
+                    "image": {
+                      "data": {
+                        "__typename": "ImageV2",
+                        "sources": [
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 300,
+                            "maxWidth": 300,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02086334217996ebabea5bef33"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 64,
+                            "maxWidth": 64,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00004851086334217996ebabea5bef33"
+                          },
+                          {
+                            "imageFormat": "JPEG",
+                            "maxHeight": 640,
+                            "maxWidth": 640,
+                            "url": "https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b273086334217996ebabea5bef33"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "uid": "fcc46a8ff8b72c0b"
+          }
+        ],
+        "pagingInfo": {
+          "limit": 343,
+          "offset": 0
+        },
+        "totalCount": 13
+      },
+      "abuseReportingEnabled": true,
+      "attributes": [],
+      "basePermission": "VIEWER",
+      "currentUserCapabilities": {
+        "canAbuseReport": true,
+        "canAdministratePermissions": false,
+        "canCancelMembership": false,
+        "canEditItems": false,
+        "canView": true
+      },
+      "description": "",
+      "followers": 0,
+      "following": false,
+      "format": "",
+      "images": {
+        "items": [
+          {
+            "sources": [
+              {
+                "height": 640,
+                "url": "https://mosaic.scdn.co/640/ab67616d00001e021f1bff56e0bf61f2f66de392ab67616d00001e02650fd85c3e39008908799b2fab67616d00001e029eb6c1861d8c058e7052df1eab67616d00001e02cab73e6ac9bf4bf3c6931570",
+                "width": 640
+              },
+              {
+                "height": 300,
+                "url": "https://mosaic.scdn.co/300/ab67616d00001e021f1bff56e0bf61f2f66de392ab67616d00001e02650fd85c3e39008908799b2fab67616d00001e029eb6c1861d8c058e7052df1eab67616d00001e02cab73e6ac9bf4bf3c6931570",
+                "width": 300
+              },
+              {
+                "height": 60,
+                "url": "https://mosaic.scdn.co/60/ab67616d00001e021f1bff56e0bf61f2f66de392ab67616d00001e02650fd85c3e39008908799b2fab67616d00001e029eb6c1861d8c058e7052df1eab67616d00001e02cab73e6ac9bf4bf3c6931570",
+                "width": 60
+              }
+            ]
+          }
+        ]
+      },
+      "members": {
+        "items": [
+          {
+            "isOwner": true,
+            "permissionLevel": "CONTRIBUTOR",
+            "user": {
+              "data": {
+                "__typename": "User",
+                "avatar": null,
+                "name": "Abhishek Pandey",
+                "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+                "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+              }
+            }
+          }
+        ],
+        "totalCount": 1
+      },
+      "name": "ChutrPutrr",
+      "ownerV2": {
+        "data": {
+          "__typename": "User",
+          "avatar": null,
+          "name": "Abhishek Pandey",
+          "uri": "spotify:user:31eaxsodkc2zamt7zt25vlgsr2k4",
+          "username": "31eaxsodkc2zamt7zt25vlgsr2k4"
+        }
+      },
+      "revisionId": "AAAADq4sHlz92HbxsR7JRBMyMAgWq6FJ",
+      "sharingInfo": {
+        "shareId": "Dy2jDZwWSQS1zeJBImWWQg",
+        "shareUrl": "https://open.spotify.com/playlist/6NBxjzXowdqndfzD10XH19?si=Dy2jDZwWSQS1zeJBImWWQg"
+      },
+      "uri": "spotify:playlist:6NBxjzXowdqndfzD10XH19",
+      "visualIdentity": {
+        "squareCoverImage": {
+          "__typename": "VisualIdentityImage",
+          "extractedColorSet": {
+            "encoreBaseSetTextColor": {
+              "alpha": 255,
+              "blue": 182,
+              "green": 182,
+              "red": 201
+            },
+            "highContrast": {
+              "backgroundBase": {
+                "alpha": 255,
+                "blue": 72,
+                "green": 72,
+                "red": 88
+              },
+              "backgroundTintedBase": {
+                "alpha": 255,
+                "blue": 36,
+                "green": 36,
+                "red": 50
+              },
+              "textBase": {
+                "alpha": 255,
+                "blue": 255,
+                "green": 255,
+                "red": 255
+              },
+              "textBrightAccent": {
+                "alpha": 255,
+                "blue": 255,
+                "green": 255,
+                "red": 255
+              },
+              "textSubdued": {
+                "alpha": 255,
+                "blue": 201,
+                "green": 201,
+                "red": 220
+              }
+            },
+            "higherContrast": {
+              "backgroundBase": {
+                "alpha": 255,
+                "blue": 50,
+                "green": 50,
+                "red": 65
+              },
+              "backgroundTintedBase": {
+                "alpha": 255,
+                "blue": 82,
+                "green": 82,
+                "red": 98
+              },
+              "textBase": {
+                "alpha": 255,
+                "blue": 255,
+                "green": 255,
+                "red": 255
+              },
+              "textBrightAccent": {
+                "alpha": 255,
+                "blue": 96,
+                "green": 215,
+                "red": 30
+              },
+              "textSubdued": {
+                "alpha": 255,
+                "blue": 201,
+                "green": 201,
+                "red": 220
+              }
+            },
+            "minContrast": {
+              "backgroundBase": {
+                "alpha": 255,
+                "blue": 72,
+                "green": 72,
+                "red": 88
+              },
+              "backgroundTintedBase": {
+                "alpha": 255,
+                "blue": 36,
+                "green": 36,
+                "red": 50
+              },
+              "textBase": {
+                "alpha": 255,
+                "blue": 255,
+                "green": 255,
+                "red": 255
+              },
+              "textBrightAccent": {
+                "alpha": 255,
+                "blue": 255,
+                "green": 255,
+                "red": 255
+              },
+              "textSubdued": {
+                "alpha": 255,
+                "blue": 255,
+                "green": 255,
+                "red": 255
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

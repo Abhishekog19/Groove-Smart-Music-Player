@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option A - Vinyl/Retro Music Player</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>window.react = React;</script>
+    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { Play, Pause, SkipForward, SkipBack, Heart, Shuffle, Repeat, Volume2, List, User, Search, Plus } = LucideReact;
+
+        function VinylRetroPlayer() {
+            const [isPlaying, setIsPlaying] = useState(false);
+            const [currentView, setCurrentView] = useState('library');
+            const [likedSongs, setLikedSongs] = useState(new Set([1, 3]));
+
+            const songs = [
+                { id: 1, title: "Midnight Drive", artist: "The Neon Dreams", album: "City Lights", duration: "3:45", cover: "🌃" },
+                { id: 2, title: "Summer Breeze", artist: "Coastal Waves", album: "Endless Summer", duration: "4:12", cover: "🌊" },
+                { id: 3, title: "Coffee Shop Jazz", artist: "Smooth Collective", album: "Morning Vibes", duration: "5:23", cover: "☕" },
+                { id: 4, title: "Electric Sunset", artist: "Synth Masters", album: "Retro Future", duration: "3:58", cover: "🌅" },
+                { id: 5, title: "Rainy Monday", artist: "Indie Moods", album: "Melancholy", duration: "4:45", cover: "🌧️" },
+            ];
+
+            const playlists = [
+                { id: 1, name: "Favorites", count: 24, emoji: "❤️" },
+                { id: 2, name: "Chill Vibes", count: 18, emoji: "🌊" },
+                { id: 3, name: "Workout Energy", count: 32, emoji: "💪" },
+                { id: 4, name: "Focus Mode", count: 15, emoji: "🎯" },
+            ];
+
+            const currentSong = songs[0];
+
+            const toggleLike = (songId) => {
+                const newLiked = new Set(likedSongs);
+                if (newLiked.has(songId)) {
+                    newLiked.delete(songId);
+                } else {
+                    newLiked.add(songId);
+                }
+                setLikedSongs(newLiked);
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 p-4">
+                    <style>{`
+                        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+                        
+                        @keyframes vinyl-spin {
+                            from { transform: rotate(0deg); }
+                            to { transform: rotate(360deg); }
+                        }
+                        
+                        .vinyl-spin {
+                            animation: vinyl-spin 3s linear infinite;
+                        }
+                        
+                        .vinyl-pause {
+                            animation-play-state: paused;
+                        }
+                        
+                        .retro-shadow {
+                            box-shadow: 8px 8px 0px rgba(120, 53, 15, 0.2), 12px 12px 0px rgba(120, 53, 15, 0.1);
+                        }
+                        
+                        .retro-text {
+                            font-family: 'Bebas Neue', cursive;
+                            letter-spacing: 0.05em;
+                        }
+                        
+                        .serif-text {
+                            font-family: 'Crimson Text', serif;
+                        }
+                        
+                        .grain {
+                            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+                        }
+                    `}</style>
+
+                    <nav className="max-w-7xl mx-auto mb-8 flex items-center justify-between">
+                        <h1 className="retro-text text-5xl text-orange-900 tracking-wider">GROOVE</h1>
+                        <div className="flex gap-6">
+                            {['library', 'player', 'playlists'].map(view => (
+                                <button
+                                    key={view}
+                                    onClick={() => setCurrentView(view)}
+                                    className={`retro-text text-xl px-6 py-2 transition-all ${currentView === view
+                                            ? 'bg-orange-600 text-white retro-shadow'
+                                            : 'text-orange-800 hover:text-orange-600'
+                                        }`}
+                                >
+                                    {view.toUpperCase()}
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
+
+                    <div className="max-w-7xl mx-auto">
+                        {currentView === 'library' && (
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="flex-1 relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Search your collection..."
+                                            className="w-full pl-12 pr-4 py-4 bg-white/80 border-4 border-orange-900 retro-shadow serif-text text-lg focus:outline-none focus:border-orange-600"
+                                        />
+                                    </div>
+                                    <button className="bg-orange-600 text-white px-8 py-4 retro-shadow hover:bg-orange-700 transition-all retro-text text-xl">
+                                        <Plus size={24} />
+                                    </button>
+                                </div>
+
+                                <div className="grid gap-4">
+                                    {songs.map((song, index) => (
+                                        <div
+                                            key={song.id}
+                                            className="bg-white/80 border-4 border-orange-900 retro-shadow p-6 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer grain"
+                                        >
+                                            <div className="flex items-center gap-6">
+                                                <div className="text-6xl w-20 h-20 flex items-center justify-center bg-gradient-to-br from-orange-200 to-red-200 border-4 border-orange-900">
+                                                    {song.cover}
+                                                </div>
+
+                                                <div className="flex-1">
+                                                    <h3 className="retro-text text-2xl text-orange-900 mb-1">{song.title}</h3>
+                                                    <p className="serif-text text-orange-700 text-lg">{song.artist} · {song.album}</p>
+                                                </div>
+
+                                                <div className="flex items-center gap-4">
+                                                    <span className="serif-text text-orange-700 text-lg">{song.duration}</span>
+                                                    <button
+                                                        onClick={() => toggleLike(song.id)}
+                                                        className="hover:scale-110 transition-transform"
+                                                    >
+                                                        <Heart
+                                                            size={24}
+                                                            className={likedSongs.has(song.id) ? 'fill-red-500 text-red-500' : 'text-orange-700'}
+                                                        />
+                                                    </button>
+                                                    <button className="bg-orange-600 text-white p-3 hover:bg-orange-700 transition-colors">
+                                                        <Play size={20} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {currentView === 'player' && (
+                            <div className="max-w-4xl mx-auto">
+                                <div className="bg-white/80 border-4 border-orange-900 retro-shadow p-12 grain">
+                                    <div className="flex justify-center mb-12">
+                                        <div className="relative">
+                                            <div className={`w-80 h-80 rounded-full bg-gradient-to-br from-gray-900 via-gray-800 to-black border-8 border-orange-900 ${isPlaying ? 'vinyl-spin' : 'vinyl-pause'}`}>
+                                                {[...Array(12)].map((_, i) => (
+                                                    <div
+                                                        key={i}
+                                                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-gray-700"
+                                                        style={{
+                                                            width: `${280 - i * 20}px`,
+                                                            height: `${280 - i * 20}px`,
+                                                        }}
+                                                    />
+                                                ))}
+                                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-gradient-to-br from-red-600 to-orange-600 border-4 border-orange-900 flex items-center justify-center">
+                                                    <span className="text-6xl">{currentSong.cover}</span>
+                                                </div>
+                                            </div>
+                                            <div className="absolute -right-16 top-8 w-32 h-2 bg-orange-900 origin-left rotate-[-30deg]">
+                                                <div className="absolute right-0 w-4 h-4 rounded-full bg-orange-600 -mt-1" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-center mb-8">
+                                        <h2 className="retro-text text-5xl text-orange-900 mb-2">{currentSong.title}</h2>
+                                        <p className="serif-text text-2xl text-orange-700">{currentSong.artist}</p>
+                                        <p className="serif-text text-xl text-orange-600 mt-1">{currentSong.album}</p>
+                                    </div>
+
+                                    <div className="mb-8">
+                                        <div className="h-3 bg-orange-200 border-2 border-orange-900 relative overflow-hidden">
+                                            <div className="h-full bg-orange-600 w-1/3" />
+                                        </div>
+                                        <div className="flex justify-between mt-2 serif-text text-orange-700">
+                                            <span>1:15</span>
+                                            <span>{currentSong.duration}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-center gap-6 mb-8">
+                                        <button className="text-orange-700 hover:text-orange-600 transition-colors">
+                                            <Shuffle size={28} />
+                                        </button>
+                                        <button className="text-orange-700 hover:text-orange-600 transition-colors">
+                                            <SkipBack size={32} />
+                                        </button>
+                                        <button
+                                            onClick={() => setIsPlaying(!isPlaying)}
+                                            className="bg-orange-600 text-white p-6 retro-shadow hover:bg-orange-700 transition-all"
+                                        >
+                                            {isPlaying ? <Pause size={40} /> : <Play size={40} className="ml-1" />}
+                                        </button>
+                                        <button className="text-orange-700 hover:text-orange-600 transition-colors">
+                                            <SkipForward size={32} />
+                                        </button>
+                                        <button className="text-orange-700 hover:text-orange-600 transition-colors">
+                                            <Repeat size={28} />
+                                        </button>
+                                    </div>
+
+                                    <div className="flex items-center gap-4">
+                                        <Volume2 className="text-orange-700" size={24} />
+                                        <div className="flex-1 h-3 bg-orange-200 border-2 border-orange-900">
+                                            <div className="h-full bg-orange-600 w-2/3" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {currentView === 'playlists' && (
+                            <div className="space-y-6">
+                                <div className="flex justify-between items-center mb-8">
+                                    <h2 className="retro-text text-4xl text-orange-900">YOUR COLLECTIONS</h2>
+                                    <button className="bg-orange-600 text-white px-8 py-4 retro-shadow hover:bg-orange-700 transition-all retro-text text-xl flex items-center gap-2">
+                                        <Plus size={24} />
+                                        NEW PLAYLIST
+                                    </button>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    {playlists.map((playlist, index) => (
+                                        <div
+                                            key={playlist.id}
+                                            className="bg-white/80 border-4 border-orange-900 retro-shadow p-8 hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer grain"
+                                        >
+                                            <div className="flex items-center gap-6">
+                                                <div className="text-7xl w-28 h-28 flex items-center justify-center bg-gradient-to-br from-orange-200 to-red-200 border-4 border-orange-900">
+                                                    {playlist.emoji}
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h3 className="retro-text text-3xl text-orange-900 mb-2">{playlist.name}</h3>
+                                                    <p className="serif-text text-xl text-orange-700">{playlist.count} tracks</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {currentView !== 'player' && (
+                        <div className="fixed bottom-0 left-0 right-0 bg-orange-900 border-t-4 border-orange-950 p-4">
+                            <div className="max-w-7xl mx-auto flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="text-4xl w-14 h-14 flex items-center justify-center bg-gradient-to-br from-orange-200 to-red-200 border-2 border-orange-950">
+                                        {currentSong.cover}
+                                    </div>
+                                    <div>
+                                        <h4 className="retro-text text-xl text-white">{currentSong.title}</h4>
+                                        <p className="serif-text text-orange-200">{currentSong.artist}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <button className="text-white hover:text-orange-200 transition-colors">
+                                        <SkipBack size={24} />
+                                    </button>
+                                    <button
+                                        onClick={() => setIsPlaying(!isPlaying)}
+                                        className="bg-orange-600 text-white p-3 hover:bg-orange-700 transition-colors"
+                                    >
+                                        {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-0.5" />}
+                                    </button>
+                                    <button className="text-white hover:text-orange-200 transition-colors">
+                                        <SkipForward size={24} />
+                                    </button>
+                                </div>
+
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={() => toggleLike(currentSong.id)}
+                                        className="hover:scale-110 transition-transform"
+                                    >
+                                        <Heart
+                                            size={24}
+                                            className={likedSongs.has(currentSong.id) ? 'fill-orange-200 text-orange-200' : 'text-white'}
+                                        />
+                                    </button>
+                                    <button
+                                        onClick={() => setCurrentView('player')}
+                                        className="text-white hover:text-orange-200 transition-colors"
+                                    >
+                                        <List size={24} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<VinylRetroPlayer />);
+    </script>
+</body>
+
+</html>

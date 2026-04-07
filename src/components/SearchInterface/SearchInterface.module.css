@@ -1,0 +1,720 @@
+/* ============================================================
+   SearchInterface.module.css
+   Glassmorphic dark theme — matches the Smusic aesthetic
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── Root container ─────────────────────────────────────────── */
+.container {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #ffffff;
+  min-height: 100%;
+  padding: 1.5rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Global: every element inside inherits white unless explicitly overridden */
+.container *,
+.container *::before,
+.container *::after {
+  color: inherit;
+}
+
+/* ── Search box ─────────────────────────────────────────────── */
+.searchSection {
+  margin-bottom: 1.5rem;
+}
+
+.searchBox {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(20, 20, 24, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 0.5rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.2s;
+}
+
+.searchBox:focus-within {
+  border-color: rgba(251, 146, 60, 0.5);
+  box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.08);
+}
+
+.inputWrapper {
+  flex: 1;
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  padding: 0.5rem 0.75rem;
+  caret-color: #f97316;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Force override any inherited dark-on-dark styles */
+.searchBox * {
+  color: #ffffff;
+}
+
+.searchButton {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.searchButton:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.searchButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.buttonLabel {
+  display: inline;
+}
+
+@media (max-width: 480px) {
+  .buttonLabel { display: none; }
+}
+
+/* ── Tabs ───────────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0;
+}
+
+
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.tab:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.activeTab {
+  color: #f97316;
+  border-bottom: 2px solid #f97316;
+  background: rgba(249, 115, 22, 0.07);
+}
+
+/* ── Status messages ────────────────────────────────────────── */
+.error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.loadingMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #ffffff;
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
+  margin-bottom: 0.75rem;
+}
+
+/* ── Results wrapper ────────────────────────────────────────── */
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Playlist controls (Play All / Shuffle / Download All) ───── */
+.playlistControls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.playAllBtn,
+.shuffleBtn,
+.downloadAllBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.playAllBtn {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff;
+}
+
+.shuffleBtn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.downloadAllBtn {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.playAllBtn:hover,
+.shuffleBtn:hover,
+.downloadAllBtn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.trackCount {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: #ffffff;
+}
+
+/* ── Track list ─────────────────────────────────────────────── */
+.trackList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.trackRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+  position: relative;
+}
+
+.trackRow:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.trackRow:hover .trackActions {
+  opacity: 1;
+}
+
+.trackImage {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.trackInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.trackTitle {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #f0f0f0;
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trackArtist {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trackQuality {
+  font-size: 0.7rem;
+  color: #f97316;
+  margin: 0;
+  opacity: 0.75;
+}
+
+.trackActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  position: relative;
+  color: #ffffff;
+}
+
+.downloadBtn,
+.menuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0.4rem;
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.downloadBtn:hover,
+.menuBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.menuContainer {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 200;
+  background: #1f1f24;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  min-width: 170px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+  width: 100%;
+}
+
+.dropdownItem:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 0.2rem 0.5rem;
+}
+
+/* ── Album grid ─────────────────────────────────────────────── */
+.albumGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.albumCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 0.75rem;
+  transition: background 0.15s, transform 0.15s;
+  cursor: pointer;
+  position: relative;
+}
+
+.albumCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.albumImageContainer {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.6rem;
+}
+
+.albumImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.albumTitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f0f0f0;
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.albumArtist {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.albumYear {
+  font-size: 0.71rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+}
+
+.albumDownloadBtn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.55);
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+  backdrop-filter: blur(4px);
+}
+
+.albumCard:hover .albumDownloadBtn {
+  opacity: 1;
+}
+
+.albumDownloadBtn:disabled {
+  cursor: not-allowed;
+}
+
+.downloadProgress {
+  font-size: 0.7rem;
+  color: #86efac;
+  margin: 4px 0 0;
+}
+
+.downloadError {
+  font-size: 0.7rem;
+  color: #fca5a5;
+  margin: 4px 0 0;
+}
+
+/* ── Artist grid ────────────────────────────────────────────── */
+.artistGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1rem;
+}
+
+.artistCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  transition: background 0.15s, transform 0.15s;
+  cursor: pointer;
+}
+
+.artistCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.artistImageContainer {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0 auto 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.artistImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.artistPlaceholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.artistName {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f0f0f0;
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artistLabel {
+  font-size: 0.71rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+/* ── Playlist grid ──────────────────────────────────────────── */
+.playlistGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.playlistCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 0.75rem;
+  transition: background 0.15s, transform 0.15s;
+  cursor: pointer;
+}
+
+.playlistCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.playlistImageContainer {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.6rem;
+}
+
+.playlistImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.playlistTitle {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f0f0f0;
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlistCreator {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 2px;
+}
+
+/* ── Spinner ────────────────────────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 0.9s linear infinite;
+}
+
+/* ── Skeleton loading ───────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeletonBase {
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+
+.loadingTracks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeletonTrack {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.skeletonImage {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.skeletonContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skeletonLine {
+  height: 10px;
+  border-radius: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.skeletonCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── News section ───────────────────────────────────────────── */
+.newsContainer {
+  margin-top: 2rem;
+}
+
+.newsTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 1rem;
+}
+
+.newsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.newsCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  transition: background 0.15s;
+}
+
+.newsCard:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.newsHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.newsHeader h3 {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f0f0f0;
+  margin: 0;
+}
+
+.newsIcon {
+  color: #f97316;
+  flex-shrink: 0;
+}
+
+.newsDescription {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  line-height: 1.5;
+}
