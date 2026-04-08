@@ -157,13 +157,33 @@ router.get('/', async (req, res) => {
   const origin = req.headers.origin || null;
   res.setHeader('Access-Control-Allow-Origin', isOriginAllowed(origin) ? (origin || '*') : '');
 
+  let url = req.query.url || '';
+
   const params = {
-    url: req.query.url || '',
+    url,
     userCountry: req.query.userCountry || 'US',
     songIfSingle: req.query.songIfSingle === 'true',
   };
 
   if (!params.url) return res.status(400).json({ error: 'Missing required parameter: url' });
+
+  // ── Resolve shortened URLs (spotify.link, etc.) ──
+  if (params.url.includes('spotify.link/') || (params.url.includes('spotify') && !params.url.includes('open.spotify.com/'))) {
+    try {
+      const resolved = await fetch(params.url, {
+        method: 'HEAD',
+        redirect: 'follow',
+        headers: { 'User-Agent': 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/131.0.0.0 Mobile Safari/537.36' },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (resolved.url && resolved.url !== params.url) {
+        console.log(`[songlink] Resolved: ${params.url} → ${resolved.url}`);
+        params.url = resolved.url;
+      }
+    } catch (resolveErr) {
+      console.warn(`[songlink] URL resolve failed:`, resolveErr.message);
+    }
+  }
 
   const isSpotifyTrack = params.url.includes('open.spotify.com/track/');
 

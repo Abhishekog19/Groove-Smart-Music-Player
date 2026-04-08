@@ -8,6 +8,7 @@ import cors from 'cors';
 import proxyRoute from './routes/proxy.js';
 import songlinkRoute from './routes/songlink.js';
 import spotifyPlaylistRoute from './routes/spotify-playlist.js';
+import resolveUrlRoute from './routes/resolve-url.js';
 
 const app = express();
 const PORT = process.env.API_PORT || 3001;
@@ -28,6 +29,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/proxy', proxyRoute);
 app.use('/api/songlink', songlinkRoute);
 app.use('/api/spotify-playlist', spotifyPlaylistRoute);
+app.use('/api/resolve-url', resolveUrlRoute);
 
 // 404 handler
 app.use('/api/{*path}', (_req, res) => {
@@ -39,6 +41,7 @@ app.listen(PORT, () => {
   console.log(`   /api/proxy              → TIDAL/Spotify proxy + caching`);
   console.log(`   /api/songlink           → Spotify → TIDAL URL conversion`);
   console.log(`   /api/spotify-playlist   → Playlist track extractor`);
+  console.log(`   /api/resolve-url        → Shortened URL resolver (mobile)`);
   console.log(`   /api/health             → Health check\n`);
 });
 

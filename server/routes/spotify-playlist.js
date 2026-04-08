@@ -271,13 +271,33 @@ router.post('/', async (req, res) => {
   const origin = req.headers.origin || null;
   res.setHeader('Access-Control-Allow-Origin', isOriginAllowed(origin) ? (origin || '*') : '');
 
-  const { playlistUrl } = req.body || {};
+  let { playlistUrl } = req.body || {};
   if (!playlistUrl) return res.status(400).json({ error: 'Missing playlistUrl' });
 
-  const playlistId = playlistUrl.split('playlist/')[1]?.split('?')[0].split('&')[0] || '';
-  if (!playlistId) return res.status(400).json({ error: 'Invalid Spotify playlist URL' });
-
   try {
+    // ── Resolve shortened URLs (spotify.link, etc.) ──
+    if (playlistUrl.includes('spotify.link/') || !playlistUrl.includes('open.spotify.com/')) {
+      try {
+        const resolved = await fetch(playlistUrl, {
+          method: 'HEAD',
+          redirect: 'follow',
+          headers: { 'User-Agent': COMMON_HEADERS['User-Agent'] },
+          signal: AbortSignal.timeout(8000),
+        });
+        if (resolved.url && resolved.url !== playlistUrl) {
+          console.log(`[spotify-playlist] Resolved: ${playlistUrl} → ${resolved.url}`);
+          playlistUrl = resolved.url;
+        }
+      } catch (resolveErr) {
+        console.warn(`[spotify-playlist] URL resolve failed (trying original):`, resolveErr.message);
+      }
+    }
+
+    // ── Extract playlist ID (handles ?si=, &utm_source=, etc.) ──
+    const playlistIdMatch = playlistUrl.match(/playlist\/([a-zA-Z0-9]+)/);
+    const playlistId = playlistIdMatch ? playlistIdMatch[1] : '';
+    if (!playlistId) return res.status(400).json({ error: 'Invalid Spotify playlist URL. Make sure you\'re pasting a playlist link.' });
+
     console.log(`[spotify-playlist] Fetching playlist: ${playlistId}`);
 
     const { deviceId, clientVersion, jsPack } = await getSessionData();

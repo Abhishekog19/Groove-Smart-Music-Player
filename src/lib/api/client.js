@@ -47,6 +47,19 @@ export async function extractSpotifyPlaylist(playlistUrl) {
 
 
 /**
+ * Resolve a shortened URL (e.g. spotify.link) to its final destination.
+ * Used for mobile Spotify share links.
+ */
+export async function resolveUrl(shortUrl) {
+  const response = await fetch(`/api/resolve-url?url=${encodeURIComponent(shortUrl)}`);
+  if (!response.ok) {
+    throw new Error(`URL resolution failed: ${response.status}`);
+  }
+  const data = await response.json();
+  return data.resolvedUrl || shortUrl;
+}
+
+/**
  * Search TIDAL tracks via the proxy route
  */
 export async function searchTracks(query, limit = 50) {

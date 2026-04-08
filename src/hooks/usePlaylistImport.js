@@ -1,7 +1,45 @@
 import { useState } from 'react';
-import { extractSpotifyPlaylist, convertToTidal } from '../lib/api/client';
+import { extractSpotifyPlaylist, convertToTidal, resolveUrl } from '../lib/api/client';
 import { tidalAPI } from '../lib/tidal';
 import { batchMatchTracks } from '../utils/songMatcher';
+
+/**
+ * Clean and extract a Spotify/TIDAL URL from pasted text.
+ * Mobile share text often looks like:
+ *   "Check out this song on Spotify: https://open.spotify.com/track/...?si=abc"
+ *   "https://spotify.link/AbCdEfGh"
+ * This function extracts the actual URL and strips tracking params.
+ */
+function cleanUrl(raw) {
+  const trimmed = raw.trim();
+
+  // Try to extract a URL from surrounding share text
+  const urlMatch = trimmed.match(/(https?:\/\/[^\s]+)/i);
+  let url = urlMatch ? urlMatch[1] : trimmed;
+
+  // Remove trailing punctuation that might have been captured
+  url = url.replace(/[.,;:!?)]+$/, '');
+
+  // Strip known tracking query params (si, utm_*, nd, dl_branch, etc.)
+  try {
+    const parsed = new URL(url);
+    const keepParams = new URLSearchParams();
+    for (const [key, val] of parsed.searchParams) {
+      // Keep only meaningful params, drop tracking ones
+      if (!['si', 'nd', 'dl_branch', 'context', '_branch_match_id',
+            'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+            'feature', 'app_destination'].includes(key)) {
+        keepParams.set(key, val);
+      }
+    }
+    parsed.search = keepParams.toString() ? `?${keepParams}` : '';
+    url = parsed.toString();
+  } catch {
+    // Not a valid URL, return as-is
+  }
+
+  return url;
+}
 
 /**
  * Detect URL type from a Spotify or TIDAL link
@@ -15,8 +53,27 @@ function detectUrlType(url) {
   if (trimmed.includes('open.spotify.com/album/') || trimmed.includes('spotify:album:'))
     return 'spotify-album';
   if (trimmed.includes('tidal.com/')) return 'tidal';
+  // Spotify mobile shortened links (e.g. https://spotify.link/AbCdEfGh)
+  if (trimmed.includes('spotify.link/')) return 'spotify-short';
   if (trimmed.startsWith('http')) return 'unknown-url';
   return 'invalid';
+}
+
+/**
+ * Resolve a shortened Spotify URL (spotify.link) to the real open.spotify.com URL.
+ * Falls back to the original URL if resolution fails.
+ */
+async function resolveShortUrl(url) {
+  try {
+    const resolved = await resolveUrl(url);
+    if (resolved && resolved !== url) {
+      console.log(`[resolve] ${url} → ${resolved}`);
+      return resolved;
+    }
+  } catch (err) {
+    console.warn(`[resolve] Failed to resolve ${url}:`, err.message);
+  }
+  return url;
 }
 
 /**
@@ -216,12 +273,26 @@ export function usePlaylistImport() {
   const [playlistName, setPlaylistName] = useState('');
   const [error, setError] = useState(null);
 
-  const importPlaylist = async (url) => {
+  const importPlaylist = async (rawUrl) => {
     setIsImporting(true);
     setError(null);
 
     try {
-      const urlType = detectUrlType(url);
+      // ── Clean the pasted text: extract URL, strip tracking params ──
+      let url = cleanUrl(rawUrl);
+      let urlType = detectUrlType(url);
+
+      // ── Resolve shortened spotify.link URLs ──
+      if (urlType === 'spotify-short') {
+        setProgress({ current: 0, total: 0, stage: 'resolving', message: 'Resolving shortened link…' });
+        url = await resolveShortUrl(url);
+        urlType = detectUrlType(url);
+        // If still unresolved, the server-side resolve will handle it
+        if (urlType === 'spotify-short' || urlType === 'unknown-url') {
+          // Try as a track via songlink as last resort
+          urlType = 'unknown-url';
+        }
+      }
 
       // ── Spotify playlist: extract rich metadata directly, use ISRC for TIDAL ──
       if (urlType === 'spotify-playlist') {
@@ -271,6 +342,8 @@ export function usePlaylistImport() {
       let songLinks = [];
       if (urlType === 'spotify-track' || urlType === 'spotify-album' || urlType === 'unknown-url' || urlType === 'tidal') {
         songLinks = [url];
+      } else if (urlType === 'invalid') {
+        throw new Error('That doesn\'t look like a valid URL. Paste a Spotify or TIDAL link (playlist, track, or album).');
       } else {
         throw new Error('Unsupported URL. Paste a Spotify playlist, track, or album link.');
       }

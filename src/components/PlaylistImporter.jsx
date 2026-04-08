@@ -38,7 +38,7 @@ export default function PlaylistImporter() {
           Import from Spotify
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.25rem' }}>
-          Paste a Spotify playlist, track, or album link below to match, download or play.
+          Paste a Spotify link below — works with share links from the mobile app too.
         </p>
 
         {/* URL input */}
@@ -47,7 +47,7 @@ export default function PlaylistImporter() {
             type="text"
             value={playlistUrl}
             onChange={(e) => setPlaylistUrl(e.target.value)}
-            placeholder="https://open.spotify.com/playlist/..."
+            placeholder="Paste Spotify link (playlist, track, or album)"
             className="s-input"
             style={{ flex: 1 }}
             disabled={isImporting}
