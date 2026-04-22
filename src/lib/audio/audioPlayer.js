@@ -135,9 +135,18 @@ class AudioPlayerManager {
                         return false;
                     }
 
-                    audioUrl = streamUrl;
-                    // Don't revoke TIDAL URLs (they're not object URLs)
+                    // IMPORTANT: Never send the raw TIDAL CDN URL directly to Howler.
+                    // The browser will get a 403 (CDN tokens are server-context sensitive)
+                    // and CORS will block the request anyway.
+                    // Route all TIDAL audio through our local proxy instead.
+                    const isTidalCdn = /\.tidal\.com|tidal\.com\/|audio\.tidal/i.test(streamUrl);
+                    audioUrl = isTidalCdn
+                        ? `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`
+                        : streamUrl;
+
+                    // Don't revoke proxy/TIDAL URLs (they're not object URLs)
                     this.currentObjectUrl = null;
+                    console.log('[audioPlayer] TIDAL stream proxied:', audioUrl.substring(0, 80));
                 } catch (tidalErr) {
                     console.error('[audioPlayer] TIDAL stream error:', tidalErr);
                     this.onLoadError?.('TIDAL stream failed: ' + tidalErr.message);
