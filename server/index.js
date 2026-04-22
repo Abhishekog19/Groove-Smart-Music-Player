@@ -6,9 +6,11 @@ import express from 'express';
 import cors from 'cors';
 
 import proxyRoute from './routes/proxy.js';
+import audioProxyRoute from './routes/audio-proxy.js';
 import songlinkRoute from './routes/songlink.js';
 import spotifyPlaylistRoute from './routes/spotify-playlist.js';
 import resolveUrlRoute from './routes/resolve-url.js';
+import tidalDownloadRoute from './routes/tidal-download.js';
 
 const app = express();
 const PORT = process.env.API_PORT || 3001;
@@ -27,9 +29,11 @@ app.get('/api/health', (_req, res) => {
 
 // API Routes
 app.use('/api/proxy', proxyRoute);
+app.use('/api/audio-proxy', audioProxyRoute);
 app.use('/api/songlink', songlinkRoute);
 app.use('/api/spotify-playlist', spotifyPlaylistRoute);
 app.use('/api/resolve-url', resolveUrlRoute);
+app.use('/api/tidal-download', tidalDownloadRoute);
 
 // 404 handler
 app.use('/api/{*path}', (_req, res) => {
@@ -38,10 +42,12 @@ app.use('/api/{*path}', (_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`\n🚀 Antigravity API server running on http://localhost:${PORT}`);
-  console.log(`   /api/proxy              → TIDAL/Spotify proxy + caching`);
+  console.log(`   /api/proxy              → TIDAL/Spotify JSON proxy + caching`);
+  console.log(`   /api/audio-proxy        → TIDAL CDN audio stream proxy (binary)`);
   console.log(`   /api/songlink           → Spotify → TIDAL URL conversion`);
   console.log(`   /api/spotify-playlist   → Playlist track extractor`);
   console.log(`   /api/resolve-url        → Shortened URL resolver (mobile)`);
+  console.log(`   /api/tidal-download     → TIDAL stream resolve + ZIP download`);
   console.log(`   /api/health             → Health check\n`);
 });
 

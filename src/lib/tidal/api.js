@@ -1,6 +1,38 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 import { API_CONFIG, fetchWithCORS, selectApiTargetForRegion } from "./config.js";
+
+// ── Audio stream proxy ────────────────────────────────────────────────────────
+// TIDAL audio CDN URLs cannot be fetched directly from the browser (CORS).
+// Route them through our local server's /api/audio-proxy endpoint instead.
+const AUDIO_PROXY_ENDPOINT = '/api/audio-proxy';
+
+function isTidalCdnUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  try {
+    const u = new URL(url);
+    const h = u.hostname.toLowerCase();
+    return (
+      h.endsWith('.tidal.com') ||
+      h === 'tidal.com' ||
+      h.includes('audio.tidal') ||
+      h.includes('cf-hls-media')
+    );
+  } catch { return false; }
+}
+
+/**
+ * Wraps a TIDAL CDN URL in the local audio-proxy endpoint.
+ * The browser then fetches /api/audio-proxy?url=... from localhost,
+ * and the server pipes the CDN audio bytes back.
+ */
+function proxyAudioUrl(url) {
+  if (!isTidalCdnUrl(url)) return url; // non-CDN URLs are fetched as-is
+  return `${AUDIO_PROXY_ENDPOINT}?url=${encodeURIComponent(url)}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function deriveTrackQuality(track) {
   return track?.mediaMetadata?.tags?.includes("HIRES_LOSSLESS") ? "HI_RES_LOSSLESS" : null;
 }
@@ -548,7 +580,9 @@ class LosslessAPI {
     const chunks = [];
     let receivedBytes = 0;
     for (const url of urls) {
-      const response = await this.fetch(url, { signal: options?.signal });
+      // Proxy CDN segment URLs through our server to bypass CORS
+      const proxiedSegmentUrl = proxyAudioUrl(url);
+      const response = await this.fetch(proxiedSegmentUrl, { signal: options?.signal });
       if (!response.ok) {
         throw new Error(`Failed to fetch DASH segment (status ${response.status})`);
       }
@@ -756,7 +790,13 @@ class LosslessAPI {
       const isTokenRetry = response.status === 401 && subStatus === 11002;
       const message = detail ?? `Failed to get track (status ${response.status})`;
       lastError = new Error(isTokenRetry ? userMessage ?? message : message);
-      const shouldRetry = isTokenRetry || (detail ? /quality not found/i.test(detail) : response.status >= 500);
+      // Retry on: token errors, quality issues, server errors (5xx),
+      // AND 403/404 (some API wrappers block requests — rotate to next server)
+      const shouldRetry =
+        isTokenRetry ||
+        (detail ? /quality not found/i.test(detail) : response.status >= 500) ||
+        response.status === 403 ||
+        response.status === 404;
       if (attempt === 3 || !shouldRetry) {
         throw lastError;
       }
@@ -1611,7 +1651,9 @@ class LosslessAPI {
       let totalBytes;
       streamUrl = manifestLookup.originalTrackUrl || null;
       if (streamUrl) {
-        response = await fetch(streamUrl, { signal: options?.signal });
+        // Proxy CDN URL through our server to bypass browser CORS restrictions
+        const proxiedUrl = proxyAudioUrl(streamUrl);
+        response = await fetch(proxiedUrl, { signal: options?.signal });
         if (response.status === 429) {
           throw new Error(RATE_LIMIT_ERROR_MESSAGE);
         }
@@ -1660,7 +1702,9 @@ class LosslessAPI {
           }
           if (fallbackUrl) {
             streamUrl = fallbackUrl;
-            response = await fetch(fallbackUrl, { signal: options?.signal });
+            // Proxy CDN URL through our server to bypass browser CORS restrictions
+            const proxiedFallbackUrl = proxyAudioUrl(fallbackUrl);
+            response = await fetch(proxiedFallbackUrl, { signal: options?.signal });
             if (response.status === 429) {
               throw new Error(RATE_LIMIT_ERROR_MESSAGE);
             }

@@ -8,6 +8,12 @@ const PROD_ALLOWED = new Set([
   'open.spotifycdn.com',
   'clienttoken.spotify.com',
   'musicbrainz.org',
+  // TIDAL audio CDN domains — needed for proxied audio stream downloads
+  'audio.tidal.com',
+  'sp-pr.audio.tidal.com',
+  'audio4.tidal.com',
+  'chorus.tidal.com',
+  'cf-hls-media.tidal.com',
 ]);
 
 // In dev, also allow loopback for proxy self-test
