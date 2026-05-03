@@ -63,7 +63,7 @@ function buildHeaders(target) {
  * Fetch from V2 proxy with automatic retry across multiple mirrors.
  * Tries up to `maxAttempts` different targets before giving up.
  */
-async function fetchV2(path, maxAttempts = 6) {
+async function fetchV2(path, maxAttempts = 10) {
   const tried = new Set();
   let lastError = null;
 
@@ -95,7 +95,7 @@ async function fetchV2(path, maxAttempts = 6) {
     try {
       const r = await fetch(url, {
         headers: buildHeaders(target),
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(8000),
       });
       if (r.ok) return { response: r, target };
       console.warn(`[tidal-v2] ${target.name} returned ${r.status} for ${path}`);
@@ -111,7 +111,7 @@ async function fetchV2(path, maxAttempts = 6) {
     const url = `${FALLBACK_BASE}${path}`;
     const r = await fetch(url, {
       headers: { 'Accept': 'application/json', 'User-Agent': BROWSER_UA },
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(8000),
     });
     if (r.ok) return { response: r, target: { name: 'fallback', baseUrl: FALLBACK_BASE } };
   } catch (err) {
