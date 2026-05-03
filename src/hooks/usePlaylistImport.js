@@ -8,28 +8,47 @@ import { batchMatchTracks } from '../utils/songMatcher';
  * Returns the same { items: [...] } shape as tidalAPI.searchTracks.
  */
 async function backendSearchTracks(query) {
-  try {
-    const res = await fetch(
-      `/api/tidal-download/search?q=${encodeURIComponent(query)}&limit=20`,
-      { cache: 'no-store' }
-    );
-    if (res.ok) {
-      const { results } = await res.json();
-      return {
-        items: (results || []).map((t) => ({
-          id: t.id,
-          title: t.title || '',
-          duration: Math.round((t.durationMs || 0) / 1000),
-          artist: { name: t.artist || '' },
-          artists: t.artist ? [{ name: t.artist }] : [],
-          album: { title: t.album || '', cover: null },
-          isrc: t.isrc || null,
-        })),
-        totalNumberOfItems: results?.length ?? 0,
-      };
+  const MAX_RETRIES = 3;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const res = await fetch(
+        `/api/tidal-download/search?q=${encodeURIComponent(query)}&limit=20`,
+        { cache: 'no-store' }
+      );
+      if (res.ok) {
+        const { results } = await res.json();
+        if (results && results.length > 0) {
+          return {
+            items: results.map((t) => ({
+              id: t.id,
+              title: t.title || '',
+              duration: Math.round((t.durationMs || 0) / 1000),
+              artist: { name: t.artist || '' },
+              artists: t.artist ? [{ name: t.artist }] : [],
+              album: { title: t.album || '', cover: t.albumCoverId || null },
+              isrc: t.isrc || null,
+            })),
+            totalNumberOfItems: results.length,
+          };
+        }
+        // Backend returned ok but 0 results — could be a bad mirror pick.
+        // Retry (backend rotates to a different mirror each call).
+        if (attempt < MAX_RETRIES) {
+          await new Promise(r => setTimeout(r, 300 * attempt));
+          continue;
+        }
+      }
+      // Non-ok response — retry
+      if (attempt < MAX_RETRIES) {
+        await new Promise(r => setTimeout(r, 300 * attempt));
+      }
+    } catch {
+      if (attempt < MAX_RETRIES) {
+        await new Promise(r => setTimeout(r, 300 * attempt));
+      }
     }
-  } catch { /* ignore */ }
-  // Return empty on failure — do NOT fall back to tidalAPI (causes 502 flood)
+  }
+  // All retries exhausted — return empty (better than causing a 502 flood)
   return { items: [], totalNumberOfItems: 0 };
 }
 

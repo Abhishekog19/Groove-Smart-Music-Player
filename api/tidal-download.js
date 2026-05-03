@@ -39,7 +39,7 @@ function selectTarget() {
   return V2_TARGETS[Math.floor(Math.random() * V2_TARGETS.length)];
 }
 
-async function fetchV2(path, maxAttempts = 4) {
+async function fetchV2(path, maxAttempts = 6) {
   const tried = new Set();
   let lastError = null;
 
@@ -53,7 +53,7 @@ async function fetchV2(path, maxAttempts = 4) {
     try {
       const r = await fetch(url, {
         headers: buildHeaders(target),
-        signal: AbortSignal.timeout(12000),
+        signal: AbortSignal.timeout(5000),  // 5s per mirror (was 12s) — fits 6 mirrors in 30s
       });
       if (r.ok) return { response: r, target };
       console.warn(`[tidal-v2] ${target.name} returned ${r.status} for ${path}`);
@@ -69,7 +69,7 @@ async function fetchV2(path, maxAttempts = 4) {
     const url = `${FALLBACK_BASE}${path}`;
     const r = await fetch(url, {
       headers: { Accept: 'application/json', 'User-Agent': BROWSER_UA },
-      signal: AbortSignal.timeout(12000),
+      signal: AbortSignal.timeout(5000),
     });
     if (r.ok) return { response: r, target: { name: 'fallback', baseUrl: FALLBACK_BASE } };
   } catch (err) {
