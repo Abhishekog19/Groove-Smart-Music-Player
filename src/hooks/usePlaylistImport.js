@@ -4,6 +4,36 @@ import { tidalAPI } from '../lib/tidal';
 import { batchMatchTracks } from '../utils/songMatcher';
 
 /**
+ * Search TIDAL via the backend endpoint (server-side mirror retry — no 502 noise in browser).
+ * Returns the same { items: [...] } shape as tidalAPI.searchTracks.
+ */
+async function backendSearchTracks(query) {
+  try {
+    const res = await fetch(
+      `/api/tidal-download/search?q=${encodeURIComponent(query)}&limit=20`,
+      { cache: 'no-store' }
+    );
+    if (res.ok) {
+      const { results } = await res.json();
+      return {
+        items: (results || []).map((t) => ({
+          id: t.id,
+          title: t.title || '',
+          duration: Math.round((t.durationMs || 0) / 1000),
+          artist: { name: t.artist || '' },
+          artists: t.artist ? [{ name: t.artist }] : [],
+          album: { title: t.album || '', cover: null },
+          isrc: t.isrc || null,
+        })),
+        totalNumberOfItems: results?.length ?? 0,
+      };
+    }
+  } catch { /* ignore */ }
+  // Return empty on failure — do NOT fall back to tidalAPI (causes 502 flood)
+  return { items: [], totalNumberOfItems: 0 };
+}
+
+/**
  * Clean and extract a Spotify/TIDAL URL from pasted text.
  * Mobile share text often looks like:
  *   "Check out this song on Spotify: https://open.spotify.com/track/...?si=abc"
@@ -121,7 +151,7 @@ async function enrichFromMetadata(spotifyMeta) {
   // ── Strategy 1: ISRC search ───────────────────────────────────────────────
   if (isrc) {
     try {
-      const results = await tidalAPI.searchTracks(`isrc:${isrc}`);
+      const results = await backendSearchTracks(`isrc:${isrc}`);
       if (results?.items?.length > 0) {
         // ISRC results are exact — always take the first
         tidalTrack = results.items[0];
@@ -141,7 +171,7 @@ async function enrichFromMetadata(spotifyMeta) {
   if (!tidalId && title) {
     const query = artist ? `${title} ${artist}` : title;
     try {
-      const results = await tidalAPI.searchTracks(query);
+      const results = await backendSearchTracks(query);
       if (results?.items?.length > 0) {
         // Try to find a result where the artist name roughly matches
         const artistLower = artist?.toLowerCase() || '';
@@ -230,7 +260,7 @@ async function enrichSpotifyUrl(spotifyUrl) {
 
       if (searchQuery) {
         try {
-          const results = await tidalAPI.searchTracks(searchQuery);
+          const results = await backendSearchTracks(searchQuery);
           if (results?.items?.length > 0) {
             tidalTrack = results.items[0];
             tidalId = tidalTrack.id;

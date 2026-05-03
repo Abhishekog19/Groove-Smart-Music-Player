@@ -103,30 +103,36 @@ class AudioPlayerManager {
             // ── Strategy 2: TIDAL stream ──────────────────────────────────
             } else if (song.sourceType === 'tidal' && song.tidalId) {
                 try {
-                    const { tidalAPI } = await import('../tidal/index.js');
+                    // Route through backend resolve endpoint — it retries mirrors
+                    // server-side so the browser makes exactly ONE request.
+                    const resolveRes = await fetch(
+                        `/api/tidal-download/resolve?title=${encodeURIComponent(song.title || '')}&artist=${encodeURIComponent(song.artist?.name || song.artist || '')}&quality=LOSSLESS`,
+                        { cache: 'no-store' }
+                    );
 
-                    // Try qualities in order: lossless first, fall back to high/low
-                    const qualities = ['LOSSLESS', 'HIGH', 'LOW'];
                     let streamUrl = null;
 
-                    for (const quality of qualities) {
-                        try {
-                            const lookup = await tidalAPI.getTrack(song.tidalId, quality);
-                            const manifest = lookup?.info?.manifest;
-                            if (manifest) {
-                                streamUrl = tidalAPI.extractStreamUrlFromManifest(manifest);
-                            }
-                            if (!streamUrl && lookup?.info?.manifest) {
-                                // Try parsing as direct URL list
-                                try {
-                                    const decoded = atob(manifest.replace(/-/g, '+').replace(/_/g, '/'));
-                                    const parsed = JSON.parse(decoded);
-                                    streamUrl = parsed?.urls?.[0] ?? null;
-                                } catch { /* ignore */ }
-                            }
-                            if (streamUrl) break;
-                        } catch (qualityErr) {
-                            console.warn(`[audioPlayer] Quality ${quality} failed:`, qualityErr.message);
+                    if (resolveRes.ok) {
+                        const data = await resolveRes.json();
+                        streamUrl = data.streamUrl || null;
+                    } else {
+                        // Backend resolve failed — fall back to direct tidalAPI silently
+                        const { tidalAPI } = await import('../tidal/index.js');
+                        for (const quality of ['LOSSLESS', 'HIGH', 'LOW']) {
+                            try {
+                                const lookup = await tidalAPI.getTrack(song.tidalId, quality);
+                                const manifest = lookup?.info?.manifest;
+                                if (manifest) {
+                                    streamUrl = tidalAPI.extractStreamUrlFromManifest?.(manifest) || null;
+                                    if (!streamUrl) {
+                                        try {
+                                            const decoded = atob(manifest.replace(/-/g, '+').replace(/_/g, '/'));
+                                            streamUrl = JSON.parse(decoded)?.urls?.[0] ?? null;
+                                        } catch { /* ignore */ }
+                                    }
+                                }
+                                if (streamUrl) break;
+                            } catch { /* try next quality */ }
                         }
                     }
 
@@ -135,20 +141,15 @@ class AudioPlayerManager {
                         return false;
                     }
 
-                    // IMPORTANT: Never send the raw TIDAL CDN URL directly to Howler.
-                    // The browser will get a 403 (CDN tokens are server-context sensitive)
-                    // and CORS will block the request anyway.
-                    // Route all TIDAL audio through our local proxy instead.
                     const isTidalCdn = /\.tidal\.com|tidal\.com\/|audio\.tidal/i.test(streamUrl);
                     audioUrl = isTidalCdn
                         ? `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`
                         : streamUrl;
 
-                    // Don't revoke proxy/TIDAL URLs (they're not object URLs)
                     this.currentObjectUrl = null;
                     console.log('[audioPlayer] TIDAL stream proxied:', audioUrl.substring(0, 80));
                 } catch (tidalErr) {
-                    console.error('[audioPlayer] TIDAL stream error:', tidalErr);
+                    console.error('[audioPlayer] TIDAL stream error:', tidalErr.message);
                     this.onLoadError?.('TIDAL stream failed: ' + tidalErr.message);
                     return false;
                 }

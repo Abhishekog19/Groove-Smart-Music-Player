@@ -13,7 +13,7 @@ import resolveUrlRoute from './routes/resolve-url.js';
 import tidalDownloadRoute from './routes/tidal-download.js';
 
 const app = express();
-const PORT = process.env.API_PORT || 3001;
+const PORT = process.env.PORT || process.env.API_PORT || 3001;
 
 // Middleware
 app.use(express.json());
@@ -40,7 +40,7 @@ app.use('/api/{*path}', (_req, res) => {
   res.status(404).json({ error: 'API route not found' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 Antigravity API server running on http://localhost:${PORT}`);
   console.log(`   /api/proxy              → TIDAL/Spotify JSON proxy + caching`);
   console.log(`   /api/audio-proxy        → TIDAL CDN audio stream proxy (binary)`);

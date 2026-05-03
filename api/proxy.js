@@ -12,6 +12,18 @@ const ALLOWED_HOSTS = new Set([
   'open.spotifycdn.com',
   'clienttoken.spotify.com',
   'musicbrainz.org',
+  // V2 TIDAL proxy mirrors — needed when frontend routes through /api/proxy
+  'triton.squid.wtf',
+  'hifi-one.spotisaver.net',
+  'hifi-two.spotisaver.net',
+  'tidal.kinoplus.online',
+  'hund.qqdl.site',
+  'katze.qqdl.site',
+  'maus.qqdl.site',
+  'vogel.qqdl.site',
+  'wolf.qqdl.site',
+  'arran.monochrome.tf',
+  'tidal.401658.xyz',
 ]);
 
 function isAllowedHost(url) {

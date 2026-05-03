@@ -1,18 +1,22 @@
 /**
  * Search page — wraps SearchInterface and bridges it with the Smusic Zustand player store.
  *
- * When the user clicks a track in search results the track is handed off to
- * usePlayerStore.playWithQueue(). The existing useAudioPlayer hook then loads the
- * song via audioPlayer.loadSong(currentSong) which internally resolves the stream.
+ * Before rendering the search UI the page checks that the backend API is reachable.
+ * If the health check fails a "Search Unavailable" maintenance banner is shown instead
+ * of a broken interface.
  */
 
 import { useCallback } from 'react';
+import { Search as SearchIcon } from 'lucide-react';
 import { SearchInterface } from '../components/SearchInterface/SearchInterface.jsx';
 import { apiClient } from '../components/SearchInterface/apiClient.js';
 import { usePlayerStore } from '../store/store.js';
+import ServiceGate from '../components/ServiceGate.jsx';
+import { useServiceStatus } from '../hooks/useServiceStatus.js';
 
 export default function Search() {
   const playWithQueue = usePlayerStore((s) => s.playWithQueue);
+  const { status, checkedAt, retry } = useServiceStatus();
 
   /**
    * Called when the user clicks a track row in SearchInterface.
@@ -54,9 +58,17 @@ export default function Search() {
   }, [playWithQueue]);
 
   return (
-    <SearchInterface
-      apiClient={apiClient}
-      onTrackSelect={handleTrackSelect}
-    />
+    <ServiceGate
+      featureName="Search"
+      icon={SearchIcon}
+      status={status}
+      checkedAt={checkedAt}
+      retry={retry}
+    >
+      <SearchInterface
+        apiClient={apiClient}
+        onTrackSelect={handleTrackSelect}
+      />
+    </ServiceGate>
   );
 }
