@@ -13,16 +13,16 @@ const router = express.Router();
 const APP_VERSION = '1.0.0';
 
 const V2_TARGETS = [
-  { name: 'squid-api',    baseUrl: 'https://triton.squid.wtf',         weight: 15 },
-  { name: 'spotisaver-1', baseUrl: 'https://hifi-one.spotisaver.net',  weight: 15 },
-  { name: 'spotisaver-2', baseUrl: 'https://hifi-two.spotisaver.net',  weight: 15 },
-  { name: 'kinoplus',     baseUrl: 'https://tidal.kinoplus.online',    weight: 15 },
-  { name: 'hund',         baseUrl: 'https://hund.qqdl.site',           weight: 15 },
-  { name: 'katze',        baseUrl: 'https://katze.qqdl.site',          weight: 15 },
-  { name: 'maus',         baseUrl: 'https://maus.qqdl.site',           weight: 15 },
-  { name: 'vogel',        baseUrl: 'https://vogel.qqdl.site',          weight: 15 },
-  { name: 'wolf',         baseUrl: 'https://wolf.qqdl.site',           weight: 15 },
-  { name: 'monochrome',   baseUrl: 'https://arran.monochrome.tf',      weight: 15 },
+  { name: 'squid-api', baseUrl: 'https://triton.squid.wtf', weight: 15 },
+  { name: 'spotisaver-1', baseUrl: 'https://hifi-one.spotisaver.net', weight: 15 },
+  { name: 'spotisaver-2', baseUrl: 'https://hifi-two.spotisaver.net', weight: 15 },
+  { name: 'kinoplus', baseUrl: 'https://tidal.kinoplus.online', weight: 15 },
+  { name: 'hund', baseUrl: 'https://hund.qqdl.site', weight: 15 },
+  { name: 'katze', baseUrl: 'https://katze.qqdl.site', weight: 15 },
+  { name: 'maus', baseUrl: 'https://maus.qqdl.site', weight: 15 },
+  { name: 'vogel', baseUrl: 'https://vogel.qqdl.site', weight: 15 },
+  { name: 'wolf', baseUrl: 'https://wolf.qqdl.site', weight: 15 },
+  { name: 'monochrome', baseUrl: 'https://arran.monochrome.tf', weight: 15 },
 ];
 
 const FALLBACK_BASE = 'https://tidal.401658.xyz';
@@ -52,7 +52,7 @@ function buildHeaders(target) {
     'User-Agent': BROWSER_UA,
   };
   const isCustom = !target.baseUrl.includes('tidal.com') &&
-                   !target.baseUrl.includes('monochrome.tf');
+    !target.baseUrl.includes('monochrome.tf');
   if (isCustom) {
     headers['X-Client'] = `BiniLossless/${APP_VERSION}`;
   }
@@ -124,14 +124,34 @@ async function fetchV2(path, maxAttempts = 10) {
 /**
  * Recursively find items array in a nested search response.
  * V2 proxies may nest results differently than the official API.
+ *
+ * Handles shapes:
+ *   { items: [...] }                  — standard
+ *   { data: [...] }                   — V2 proxies (hund, katze, maus, etc.)
+ *   { data: { items: [...] } }        — older V2 shape
+ *   [...] (bare array)                — direct array response
  */
 function findItems(obj, visited = new WeakSet()) {
   if (!obj || typeof obj !== 'object') return null;
+
+  // If obj itself is an array and has track-like objects, return it
+  if (Array.isArray(obj)) {
+    if (obj.length > 0 && (obj[0]?.id !== undefined || obj[0]?.title !== undefined)) {
+      return obj;
+    }
+    return null;
+  }
+
   if (visited.has(obj)) return null;
   visited.add(obj);
 
-  if (Array.isArray(obj.items)) return obj.items;
+  // Check direct .items property
+  if (Array.isArray(obj.items) && obj.items.length > 0) return obj.items;
 
+  // Check direct .data property — handles { version, data: [...] } from V2 mirrors
+  if (Array.isArray(obj.data)) return obj.data;
+
+  // Recurse into nested objects
   for (const val of Object.values(obj)) {
     if (val && typeof val === 'object') {
       const found = findItems(val, visited);
@@ -140,6 +160,7 @@ function findItems(obj, visited = new WeakSet()) {
   }
   return null;
 }
+
 
 /**
  * Search TIDAL for a track by ISRC or title+artist via V2 proxies.
@@ -252,7 +273,7 @@ function extractFromManifest(manifest) {
     if (url.includes('$Number$')) continue;     // template, not a direct URL
     if (/\/\d+\.mp4/.test(url)) continue;       // segment, not full file
     if (url.includes('.flac') || url.includes('.mp4') || url.includes('.m4a') ||
-        url.includes('token=') || url.includes('/audio/')) {
+      url.includes('token=') || url.includes('/audio/')) {
       return url;
     }
   }
@@ -314,8 +335,8 @@ router.get('/search', async (req, res) => {
     const results = items.slice(0, searchLimit).map(track => {
       // Normalize artists — V2 proxies use `artists` array, may or may not have `artist`
       const artistName = track.artists?.map(a => a.name).filter(Boolean).join(', ')
-                      || track.artist?.name
-                      || '';
+        || track.artist?.name
+        || '';
       const albumTitle = track.album?.title || '';
       const albumCover = track.album?.cover
         ? `https://resources.tidal.com/images/${track.album.cover.replace(/-/g, '/')}/640x640.jpg`
@@ -502,6 +523,235 @@ router.post('/zip', async (req, res) => {
   console.log(`[tidal-download/zip] Done: ${succeeded}/${tracks.length} tracks`);
 });
 
+
+// ─── GET /api/tidal-download/cover ────────────────────────────────────────────
+// Resolves cover art URL for a track by ID or query string.
+// Closes the `getCover` API gap — previously only callable internally.
+//
+// Query params:
+//   id    {number} optional — TIDAL track ID
+//   q     {string} optional — search query (title + artist)
+//   size  {string} optional — image size: 80|160|320|640|1280 (default 640)
+router.get('/cover', async (req, res) => {
+  const origin = req.headers.origin || null;
+  res.setHeader('Access-Control-Allow-Origin', isOriginAllowed(origin) ? (origin || '*') : '*');
+
+  const { id, q, size = '640' } = req.query;
+  if (!id && !q) {
+    return res.status(400).json({ error: 'Missing required param: id or q' });
+  }
+
+  try {
+    const safeSizes = ['80', '160', '320', '640', '1280'];
+    const sz = safeSizes.includes(size) ? size : '640';
+
+    // If we have a track ID + optional title/artist, search by title+artist to get
+    // the full track object with album.cover UUID, then match by ID.
+    // Note: Searching by bare numeric ID returns 0 results on V2 mirrors.
+    if (id) {
+      // Use title+artist if provided for a more targeted search
+      const { title: titleQ, artist: artistQ } = req.query;
+      const searchQuery = titleQ ? `${titleQ} ${artistQ || ''}`.trim() : null;
+
+      if (searchQuery) {
+        const path = `/search/?s=${encodeURIComponent(searchQuery)}`;
+        const { response } = await fetchV2(path);
+        const data = await response.json();
+        const items = findItems(data) || [];
+
+        // Find exact ID match first, fall back to first result
+        const track = items.find(t => String(t.id) === String(id)) ?? items[0] ?? null;
+        const album = track?.album ?? null;
+        const coverUuid = album?.cover ?? null;
+
+        if (!coverUuid) {
+          return res.status(404).json({ error: 'No cover found for this track' });
+        }
+
+        const coverUrl = `https://resources.tidal.com/images/${coverUuid.replace(/-/g, '/')}/${sz}x${sz}.jpg`;
+        const videoCoverUuid = album?.videoCover ?? null;
+        const videoCoverUrl = videoCoverUuid
+          ? `https://resources.tidal.com/videos/${videoCoverUuid.replace(/-/g, '/')}/${sz}x${sz}.mp4`
+          : null;
+
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        return res.json({ coverUrl, videoCoverUrl, coverUuid, videoCoverUuid });
+      }
+    }
+
+    // Query-based fallback: search and extract cover from best result
+    const path = `/search/?s=${encodeURIComponent(q.trim())}`;
+    const { response } = await fetchV2(path);
+    const data = await response.json();
+    const items = findItems(data) || [];
+
+    if (items.length === 0) {
+      return res.status(404).json({ error: 'No results found for query' });
+    }
+
+    const best = items[0];
+    const coverUuid = best?.album?.cover ?? null;
+    if (!coverUuid) {
+      return res.status(404).json({ error: 'No cover found in search results' });
+    }
+
+    const coverUrl = `https://resources.tidal.com/images/${coverUuid.replace(/-/g, '/')}/${sz}x${sz}.jpg`;
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    return res.json({ coverUrl, coverUuid });
+
+  } catch (err) {
+    console.error('[tidal-download/cover]', err.message);
+    return res.status(502).json({ error: 'Cover fetch failed', details: err.message });
+  }
+});
+
+// ─── GET /api/tidal-download/song ─────────────────────────────────────────────
+// Fetches full song info (title, artist, album, cover, duration) via /song/ proxy.
+// Closes the `getSong` API gap — previously only callable internally.
+//
+// Query params:
+//   q       {string} required — search query (title + artist)
+//   quality {string} optional — LOSSLESS (default)
+router.get('/song', async (req, res) => {
+  const origin = req.headers.origin || null;
+  res.setHeader('Access-Control-Allow-Origin', isOriginAllowed(origin) ? (origin || '*') : '*');
+
+  const { q, quality = 'LOSSLESS' } = req.query;
+  if (!q || !q.trim()) {
+    return res.status(400).json({ error: 'Missing required param: q' });
+  }
+
+  try {
+    const path = `/song/?q=${encodeURIComponent(q.trim())}&quality=${quality}`;
+    const { response, target } = await fetchV2(path);
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: `Proxy returned ${response.status}` });
+    }
+
+    const data = await response.json();
+    console.log(`[tidal-download/song] "${q}" via ${target.name}`);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.json(data);
+
+  } catch (err) {
+    console.error('[tidal-download/song]', err.message);
+    return res.status(502).json({ error: 'Song fetch failed', details: err.message });
+  }
+});
+
+// ─── GET /api/tidal-download/track-metadata ───────────────────────────────────
+// Fetches enriched track metadata for a TIDAL ID:
+//   - 640px cover URL  (getCoverUrl equivalent)
+//   - animated video cover URL  (getVideoCoverUrl equivalent)
+//   - artist picture URL  (getArtistPictureUrl equivalent)
+//   - basic track info (title, artist, album)
+//
+// Closes the `getPreferredTrackMetadata`, `getDashManifestWithMetadata`,
+// `getVideoCoverUrl`, and `getCover` gaps for server-side consumers
+// (e.g. Groove Android app using /api/tidal-download/track-metadata?id=...).
+//
+// Note: The V2 /track/?id= endpoint returns stream MANIFEST only (no track info).
+//       We use /search/?s={id} to get the full track object with cover UUIDs,
+//       which is the same approach losslessAPI uses internally via searchTracks.
+//
+// Query params:
+//   id    {number} required — TIDAL track ID
+//   size  {string} optional — image size: 320|640|1280 (default 640)
+router.get('/track-metadata', async (req, res) => {
+  const origin = req.headers.origin || null;
+  res.setHeader('Access-Control-Allow-Origin', isOriginAllowed(origin) ? (origin || '*') : '*');
+
+  const { id, size = '640' } = req.query;
+  if (!id) {
+    return res.status(400).json({ error: 'Missing required param: id' });
+  }
+
+  const safeSizes = ['320', '640', '1280'];
+  const sz = safeSizes.includes(size) ? size : '640';
+
+  try {
+    // ── Search by title+artist to get full track object (title, album, cover, artist) ─
+    // The V2 /track/?id= endpoint returns only stream manifest (no title/cover).
+    // We search by title+artist (always available from the frontend currentSong object)
+    // and then match the exact track by ID.
+    //
+    // Query params accepted: id (required) + title (optional) + artist (optional)
+    const { title: titleQ, artist: artistQ } = req.query;
+    const searchQuery = titleQ
+      ? `${titleQ} ${artistQ || ''}`.trim()
+      : String(id); // last resort: numeric search (usually returns 0 results)
+
+    const searchPath = `/search/?s=${encodeURIComponent(searchQuery)}`;
+    const { response, target } = await fetchV2(searchPath);
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: `Proxy returned ${response.status}` });
+    }
+
+    const data = await response.json();
+    const items = findItems(data) || [];
+
+    // Find the track that matches our ID exactly, or fall back to the best text match
+    const track = items.find(t => String(t.id) === String(id))
+      ?? items.find(t => t.title?.toLowerCase() === titleQ?.toLowerCase())
+      ?? items[0]
+      ?? null;
+
+    if (!track) {
+      return res.status(404).json({ error: `Track ${id} not found in proxy search results` });
+    }
+
+    const album = track.album ?? {};
+    const artist = track.artist ?? track.artists?.[0] ?? {};
+
+    // ── Build cover + video cover URLs (equivalent to getCoverUrl / getVideoCoverUrl) ─
+    const coverUuid = album.cover ?? null;
+    const videoCoverUuid = album.videoCover ?? null;
+    const artistPicUuid = artist.picture ?? null;
+
+    // Static 640px cover — https://resources.tidal.com/images/{uuid}/{sz}x{sz}.jpg
+    const coverUrl = coverUuid
+      ? `https://resources.tidal.com/images/${coverUuid.replace(/-/g, '/')}/${sz}x${sz}.jpg`
+      : null;
+
+    // Animated video cover — https://resources.tidal.com/videos/{uuid}/{sz}x{sz}.mp4
+    // This is what getVideoCoverUrl() builds in api.js
+    const videoCoverUrl = videoCoverUuid
+      ? `https://resources.tidal.com/videos/${videoCoverUuid.replace(/-/g, '/')}/${sz}x${sz}.mp4`
+      : null;
+
+    // Artist picture — used by artist pages / mini-player art
+    const artistPicUrl = artistPicUuid
+      ? `https://resources.tidal.com/images/${artistPicUuid.replace(/-/g, '/')}/750x750.jpg`
+      : null;
+
+    const durationSec = track.duration ?? 0;
+    const mins = Math.floor(durationSec / 60);
+    const secs = Math.floor(durationSec % 60);
+
+    const result = {
+      tidalId: Number(id),
+      title: track.title ?? '',
+      artist: artist.name ?? '',
+      album: album.title ?? '',
+      coverUrl,
+      videoCoverUrl,
+      artistPicUrl,
+      duration: `${mins}:${String(secs).padStart(2, '0')}`,
+      durationSeconds: durationSec,
+    };
+
+    console.log(`[tidal-download/track-metadata] ID ${id} via ${target.name} — cover: ${!!coverUrl}, video: ${!!videoCoverUrl}`);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.json(result);
+
+  } catch (err) {
+    console.error('[tidal-download/track-metadata]', err.message);
+    return res.status(502).json({ error: 'Track metadata fetch failed', details: err.message });
+  }
+});
+
 // ─── OPTIONS (CORS preflight) ─────────────────────────────────────────────────
 // Use router.use() instead of router.options('*') — path-to-regexp v8 (Node 24)
 // rejects all wildcard patterns in named route methods.
@@ -518,3 +768,4 @@ router.use((req, res, next) => {
 });
 
 export default router;
+

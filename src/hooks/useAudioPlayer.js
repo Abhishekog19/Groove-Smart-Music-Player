@@ -36,7 +36,7 @@ export function useAudioPlayer() {
     } = usePlayerStore();
 
     // Throttle: only write to localStorage once every 5 seconds
-    const lastSaveRef   = useRef(0);
+    const lastSaveRef = useRef(0);
     // Keep refs to latest store values for use inside callbacks
     const stateRef = useRef({});
     useEffect(() => {
@@ -45,7 +45,7 @@ export function useAudioPlayer() {
 
     // ── Wire event callbacks once ──────────────────────────────────────────
     useEffect(() => {
-        audioPlayer.onPlay  = () => setPlaying(true);
+        audioPlayer.onPlay = () => setPlaying(true);
         audioPlayer.onPause = () => {
             setPlaying(false);
             // Save exact position immediately on pause so a refresh after
@@ -53,12 +53,12 @@ export function useAudioPlayer() {
             const { currentSong: song, queue: q, volume: vol, repeat: rep, shuffle: sh } = stateRef.current;
             if (song) {
                 saveSession({
-                    songId:      song.id,
+                    songId: song.id,
                     currentTime: audioPlayer.getCurrentTime(),
-                    queueIds:    q.map(s => s.id),
-                    volume:      vol,
-                    repeat:      rep,
-                    shuffle:     sh,
+                    queueIds: q.map(s => s.id),
+                    volume: vol,
+                    repeat: rep,
+                    shuffle: sh,
                 });
             }
         };
@@ -77,12 +77,12 @@ export function useAudioPlayer() {
                 const { currentSong: song, queue: q, volume: vol, repeat: rep, shuffle: sh } = stateRef.current;
                 if (song) {
                     saveSession({
-                        songId:      song.id,
+                        songId: song.id,
                         currentTime: time,
-                        queueIds:    q.map(s => s.id),
-                        volume:      vol,
-                        repeat:      rep,
-                        shuffle:     sh,
+                        queueIds: q.map(s => s.id),
+                        volume: vol,
+                        repeat: rep,
+                        shuffle: sh,
                     });
                 }
             }
@@ -96,12 +96,12 @@ export function useAudioPlayer() {
         };
 
         return () => {
-            audioPlayer.onPlay          = null;
-            audioPlayer.onPause         = null;
-            audioPlayer.onEnd           = null;
-            audioPlayer.onTimeUpdate    = null;
+            audioPlayer.onPlay = null;
+            audioPlayer.onPause = null;
+            audioPlayer.onEnd = null;
+            audioPlayer.onTimeUpdate = null;
             audioPlayer.onDurationReady = null;
-            audioPlayer.onLoadError     = null;
+            audioPlayer.onLoadError = null;
         };
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -202,12 +202,12 @@ export function useAudioPlayer() {
         const { currentSong: song, queue: q, shuffle: sh } = stateRef.current;
         if (!song) return;
         saveSession({
-            songId:      song.id,
+            songId: song.id,
             currentTime: audioPlayer.getCurrentTime?.() ?? 0,
-            queueIds:    q.map(s => s.id),
+            queueIds: q.map(s => s.id),
             volume,
             repeat,
-            shuffle:     sh,
+            shuffle: sh,
         });
     }, [volume, repeat]); // eslint-disable-line react-hooks/exhaustive-deps
 

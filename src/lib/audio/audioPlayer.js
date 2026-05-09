@@ -8,18 +8,18 @@ Howler.html5PoolSize = 20;
 
 // Map file extensions → Howler format strings
 const EXT_TO_FORMAT = {
-    mp3:  'mp3',
-    mp4:  'mp4',
-    m4a:  'mp4',
-    aac:  'aac',
-    ogg:  'ogg',
-    oga:  'ogg',
+    mp3: 'mp3',
+    mp4: 'mp4',
+    m4a: 'mp4',
+    aac: 'aac',
+    ogg: 'ogg',
+    oga: 'ogg',
     opus: 'opus',
-    wav:  'wav',
+    wav: 'wav',
     wave: 'wav',
     flac: 'flac',
     webm: 'webm',
-    wma:  'wma',
+    wma: 'wma',
 };
 
 /**
@@ -56,15 +56,15 @@ function resolveFormat(song) {
 
 class AudioPlayerManager {
     constructor() {
-        this.sound              = null;
-        this.currentObjectUrl   = null;   // revoke on next load
-        this.onPlay             = null;
-        this.onPause            = null;
-        this.onEnd              = null;
-        this.onTimeUpdate       = null;
-        this.onDurationReady    = null;   // called once duration is known
-        this.onLoadError        = null;   // called when a song can't be loaded
-        this._loadId            = 0;      // incremented on each load; detects superseded calls
+        this.sound = null;
+        this.currentObjectUrl = null;   // revoke on next load
+        this.onPlay = null;
+        this.onPause = null;
+        this.onEnd = null;
+        this.onTimeUpdate = null;
+        this.onDurationReady = null;   // called once duration is known
+        this.onLoadError = null;   // called when a song can't be loaded
+        this._loadId = 0;      // incremented on each load; detects superseded calls
     }
 
     /**
@@ -100,7 +100,7 @@ class AudioPlayerManager {
                 this.currentObjectUrl = URL.createObjectURL(file);
                 audioUrl = this.currentObjectUrl;
 
-            // ── Strategy 2: TIDAL stream ──────────────────────────────────
+                // ── Strategy 2: TIDAL stream ──────────────────────────────────
             } else if (song.sourceType === 'tidal' && song.tidalId) {
                 try {
                     // Route through backend resolve endpoint — it retries mirrors
@@ -154,7 +154,7 @@ class AudioPlayerManager {
                     return false;
                 }
 
-            // ── Strategy 3: blob-uploaded song ───────────────────────────
+                // ── Strategy 3: blob-uploaded song ───────────────────────────
             } else if (song.sourceType === 'upload' || (!song.sourceType && song.id)) {
                 const dbSong = song.sourceType ? song : await db.songs.get(song.id).catch(() => null);
 
@@ -171,7 +171,7 @@ class AudioPlayerManager {
                     return false;
                 }
 
-            // ── Strategy 4: demo / unknown — skip silently ───────────────
+                // ── Strategy 4: demo / unknown — skip silently ───────────────
             } else {
                 return false;
             }
@@ -187,8 +187,8 @@ class AudioPlayerManager {
 
             await new Promise((resolve, reject) => {
                 this.sound = new Howl({
-                    src:    [audioUrl],
-                    html5:  true,
+                    src: [audioUrl],
+                    html5: true,
                     format: [format],
 
                     onload: () => {

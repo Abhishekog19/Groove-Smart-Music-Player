@@ -2,12 +2,22 @@ import React, { useState } from 'react';
 import { useSearch } from '../hooks/useSearch';
 
 /**
- * SearchTracks — Search TIDAL tracks via the proxy route.
- * Shows track name, artist, album, and duration.
+ * SearchTracks — lightweight fallback search component.
+ *
+ * NOTE: The primary search UI is SearchInterface (src/components/SearchInterface/).
+ * This component uses the same `useSearch` hook (which now routes through
+ * tidalAPI's multi-mirror proxy), so its results are consistent with the
+ * main search experience.
+ *
+ * Field names match the TIDAL proxy response shape:
+ *   track.title      (not track.name)
+ *   track.duration   (seconds, not milliseconds)
+ *   track.artist.name or track.artists[].name
+ *   track.album.title (not track.album.name)
  */
 export function SearchTracks() {
   const [query, setQuery] = useState('');
-  const { results, loading, error, cached, search } = useSearch();
+  const { results, loading, error, search } = useSearch();
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -18,9 +28,10 @@ export function SearchTracks() {
     if (e.key === 'Enter') handleSearch();
   };
 
-  const formatDuration = (ms) => {
-    if (!ms) return '0:00';
-    const s = Math.floor(ms / 1000);
+  /** Duration is in seconds from the proxy — format as M:SS */
+  const formatDuration = (seconds) => {
+    if (!seconds) return '0:00';
+    const s = Math.floor(seconds);
     return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   };
 
@@ -34,7 +45,7 @@ export function SearchTracks() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Search for tracks, artists, albums..."
+          placeholder="Search for tracks, artists, albums…"
           className="flex-1 px-4 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg focus:border-blue-500 focus:outline-none"
         />
         <button
@@ -46,10 +57,6 @@ export function SearchTracks() {
         </button>
       </div>
 
-      {cached && (
-        <p className="mb-3 text-sm text-green-400">📦 Results from cache</p>
-      )}
-
       {error && (
         <div className="p-3 mb-4 bg-red-900/50 text-red-300 rounded-lg text-sm">
           {error.message}
@@ -59,23 +66,35 @@ export function SearchTracks() {
       {results.length > 0 && (
         <div className="space-y-2">
           <p className="text-gray-400 text-sm mb-3">{results.length} tracks found</p>
-          {results.map((track) => (
-            <div
-              key={track.id}
-              className="p-4 bg-gray-800 rounded-lg flex items-center justify-between hover:bg-gray-750 transition"
-            >
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-white truncate">{track.name}</p>
-                <p className="text-sm text-gray-400 truncate">
-                  {track.artists?.map((a) => a.name).join(', ') || 'Unknown'}
-                  {track.album && <span className="text-gray-500"> · {track.album.name}</span>}
-                </p>
+          {results.map((track) => {
+            // Artist: proxy returns track.artist.name (object) or track.artists[] array
+            const artistName =
+              track.artist?.name ??
+              track.artists?.map((a) => a.name).filter(Boolean).join(', ') ??
+              'Unknown';
+
+            // Album: proxy returns track.album.title
+            const albumTitle = track.album?.title ?? '';
+
+            return (
+              <div
+                key={track.id}
+                className="p-4 bg-gray-800 rounded-lg flex items-center justify-between hover:bg-gray-750 transition"
+              >
+                <div className="flex-1 min-w-0">
+                  {/* title — not name */}
+                  <p className="font-semibold text-white truncate">{track.title}</p>
+                  <p className="text-sm text-gray-400 truncate">
+                    {artistName}
+                    {albumTitle && <span className="text-gray-500"> · {albumTitle}</span>}
+                  </p>
+                </div>
+                <span className="text-sm text-gray-500 ml-4 shrink-0">
+                  {formatDuration(track.duration)}
+                </span>
               </div>
-              <span className="text-sm text-gray-500 ml-4 shrink-0">
-                {formatDuration(track.duration)}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

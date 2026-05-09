@@ -1,10 +1,19 @@
 /**
- * Antigravity API Client
- * Calls the Express backend API routes.
+ * src/lib/api/client.js
+ *
+ * Backend API helpers that talk to our Express server routes.
+ *
+ * NOTE: All TIDAL content queries (tracks, albums, artists) are delegated
+ * to `tidalAPI` (src/lib/tidal) which uses 10 weighted proxy mirrors with
+ * automatic failover.  Do NOT call https://api.tidal.com/v1 directly from
+ * the frontend — it requires an auth token and bypasses the load balancer.
  */
 
+import { tidalAPI } from '../tidal/index.js';
+
 /**
- * Make a proxied API call through /api/proxy
+ * Make a raw proxied API call through /api/proxy.
+ * Prefer the named helpers below for TIDAL content.
  */
 export async function proxyFetch(url) {
   const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
@@ -60,43 +69,51 @@ export async function resolveUrl(shortUrl) {
 }
 
 /**
- * Search TIDAL tracks via the proxy route
+ * Search TIDAL tracks.
+ * Delegates to tidalAPI.searchTracks — routes through 10 weighted proxy mirrors.
+ *
+ * @param {string} query
+ * @param {number} limit  - max results to return (client-side slice)
+ * @returns {Promise<{ items: Track[], totalNumberOfItems: number }>}
  */
 export async function searchTracks(query, limit = 50) {
-  const url = `https://api.tidal.com/v1/search/tracks?query=${encodeURIComponent(query)}&limit=${limit}`;
-  const response = await proxyFetch(url);
-  if (!response.ok) {
-    throw new Error(`Search failed for "${query}": ${response.statusText}`);
+  const data = await tidalAPI.searchTracks(query);
+  if (limit && data?.items) {
+    data.items = data.items.slice(0, limit);
   }
-  return response.json();
+  return data;
 }
 
 /**
- * Get TIDAL track info
+ * Get TIDAL track info + stream manifest.
+ * Delegates to tidalAPI.getTrack — routes through proxy mirrors.
+ *
+ * @param {number} trackId
+ * @param {string} [quality]
+ * @returns {Promise<TrackLookup>}  { track, info, originalTrackUrl? }
  */
-export async function getTrackInfo(trackId) {
-  const url = `https://api.tidal.com/v1/tracks/${trackId}`;
-  const response = await proxyFetch(url);
-  if (!response.ok) throw new Error(`Failed to fetch track ${trackId}`);
-  return response.json();
+export async function getTrackInfo(trackId, quality = 'LOSSLESS') {
+  return tidalAPI.getTrack(trackId, quality);
 }
 
 /**
- * Get TIDAL album info
+ * Get TIDAL album with all tracks.
+ * Delegates to tidalAPI.getAlbum — routes through proxy mirrors.
+ *
+ * @param {number} albumId
+ * @returns {Promise<{ album: Album, tracks: Track[] }>}
  */
 export async function getAlbumInfo(albumId) {
-  const url = `https://api.tidal.com/v1/albums/${albumId}`;
-  const response = await proxyFetch(url);
-  if (!response.ok) throw new Error(`Failed to fetch album ${albumId}`);
-  return response.json();
+  return tidalAPI.getAlbum(albumId);
 }
 
 /**
- * Get TIDAL artist info
+ * Get TIDAL artist with discography and top tracks.
+ * Delegates to tidalAPI.getArtist — routes through proxy mirrors.
+ *
+ * @param {number} artistId
+ * @returns {Promise<ArtistDetails>}
  */
 export async function getArtistInfo(artistId) {
-  const url = `https://api.tidal.com/v1/artists/${artistId}`;
-  const response = await proxyFetch(url);
-  if (!response.ok) throw new Error(`Failed to fetch artist ${artistId}`);
-  return response.json();
+  return tidalAPI.getArtist(artistId);
 }
