@@ -3,25 +3,27 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/proxy",              "destination": "/api/proxy" },
-    { "source": "/api/songlink",           "destination": "/api/songlink" },
-    { "source": "/api/spotify-playlist",   "destination": "/api/spotify-playlist" },
-    { "source": "/api/resolve-url",         "destination": "/api/resolve-url" },
-    { "source": "/api/audio-proxy",         "destination": "/api/audio-proxy" },
-    { "source": "/api/health",              "destination": "/api/health" },
-    { "source": "/api/tidal-download/(.*)", "destination": "/api/tidal-download" },
-    { "source": "/api/tidal-download",      "destination": "/api/tidal-download" },
-    { "source": "/(.*)",                    "destination": "/index.html" }
+    { "source": "/api/proxy",                "destination": "/api/proxy" },
+    { "source": "/api/songlink",             "destination": "/api/songlink" },
+    { "source": "/api/spotify-playlist",     "destination": "/api/spotify-playlist" },
+    { "source": "/api/resolve-url",          "destination": "/api/resolve-url" },
+    { "source": "/api/audio-proxy",          "destination": "/api/audio-proxy" },
+    { "source": "/api/health",               "destination": "/api/health" },
+    { "source": "/api/lyrics",               "destination": "/api/lyrics" },
+    { "source": "/api/recommendations",      "destination": "/api/recommendations" },
+    { "source": "/api/tidal-download/(.*)",  "destination": "/api/tidal-download" },
+    { "source": "/api/tidal-download",       "destination": "/api/tidal-download" },
+    { "source": "/(.*)",                     "destination": "/index.html" }
   ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Range, Authorization" },
+        { "key": "Access-Control-Allow-Origin",   "value": "*" },
+        { "key": "Access-Control-Allow-Methods",  "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers",  "value": "Content-Type, Range, Authorization" },
         { "key": "Access-Control-Expose-Headers", "value": "Content-Length, Content-Range, Accept-Ranges" },
-        { "key": "Access-Control-Max-Age", "value": "86400" }
+        { "key": "Access-Control-Max-Age",        "value": "86400" }
       ]
     }
   ],
@@ -31,6 +33,12 @@
     },
     "api/tidal-download.js": {
       "maxDuration": 30
+    },
+    "api/recommendations.js": {
+      "maxDuration": 30
+    },
+    "api/lyrics.js": {
+      "maxDuration": 15
     },
     "api/**/*.js": {
       "maxDuration": 30
