@@ -8,7 +8,7 @@ const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
  * useRecommendations
  *
  * Fetches "You May Also Like" tracks for the currently playing song.
- * Always returns exactly `limit` tracks (or fewer if not enough resolved on TIDAL).
+ * Uses /api/recommendations which proxies to Railway (parallel mirror race).
  *
  * @param {object} currentSong  — from usePlayerStore
  * @param {number} limit        — max tracks to return (default 8)
@@ -16,10 +16,10 @@ const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
  *   status: 'idle' | 'loading' | 'ready' | 'unavailable'
  */
 export function useRecommendations(currentSong, limit = 8) {
-  const [tracks, setTracks] = useState([]);
-  const [status, setStatus] = useState('idle');
-  const lastKeyRef    = useRef(null);
-  const abortRef      = useRef(null);
+  const [tracks, setTracks]   = useState([]);
+  const [status, setStatus]   = useState('idle');
+  const lastKeyRef = useRef(null);
+  const abortRef   = useRef(null);
 
   useEffect(() => {
     const title  = currentSong?.title?.trim();
@@ -58,36 +58,52 @@ export function useRecommendations(currentSong, limit = 8) {
     const ac = new AbortController();
     abortRef.current = ac;
 
-    // Request more from the server than we need — backend filters
-    // live/karaoke/instrumental and we take the top `limit` here.
+    // Build request — Railway backend (via Vite proxy in dev, Vercel proxy in prod)
     const params = new URLSearchParams({ title, artist, limit: String(limit) });
+    const url    = `/api/recommendations?${params}`;
 
-    fetch(`/api/recommendations?${params}`, { signal: ac.signal })
+    // 20-second timeout — Railway can be slow to cold-start
+    const timeoutId = setTimeout(() => ac.abort(), 20000);
+
+    fetch(url, { signal: ac.signal })
       .then(async res => {
+        clearTimeout(timeoutId);
+
         if (res.status === 404) {
           memCache[key] = { tracks: [], ts: Date.now() };
           setTracks([]); setStatus('unavailable');
           return;
         }
         if (!res.ok) throw new Error(`/api/recommendations ${res.status}`);
-        const data  = await res.json();
-        const list  = (data.tracks || []).slice(0, limit);
+
+        const data = await res.json();
+        const list = (data.tracks || []).slice(0, limit);
 
         memCache[key] = { tracks: list, ts: Date.now() };
         setTracks(list);
         setStatus(list.length > 0 ? 'ready' : 'unavailable');
       })
       .catch(err => {
-        if (err.name === 'AbortError') return; // song changed — ignore stale result
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+          // Either song changed or 20s timeout hit
+          if (!ac.signal.aborted || lastKeyRef.current !== key) return;
+          // Timeout case — don't cache, just show unavailable
+          console.warn('[useRecommendations] Timed out for:', title);
+          setTracks([]); setStatus('unavailable');
+          return;
+        }
         console.warn('[useRecommendations]', err.message);
         setTracks([]); setStatus('unavailable');
       });
 
-    return () => ac.abort();
+    return () => {
+      clearTimeout(timeoutId);
+      ac.abort();
+    };
   }, [
-    // Only re-run when the actual song identity changes
-    // (not every render that happens to pass a new object reference)
     currentSong?.tidalId,
+    currentSong?.id,
     currentSong?.title,
     limit,
   ]);

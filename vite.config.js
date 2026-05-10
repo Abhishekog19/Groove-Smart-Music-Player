@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+const RAILWAY_URL = 'https://smusic-backend-production.up.railway.app';
+
 export default defineConfig({
     plugins: [
         react(),
@@ -10,9 +12,10 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'https://smusic-backend-production.up.railway.app',
+                target: RAILWAY_URL,
                 changeOrigin: true,
-                secure: true,
+                secure: false,          // don't verify Railway's TLS cert in dev
+                rewrite: (path) => path // keep /api/... path as-is
             }
         }
     }
