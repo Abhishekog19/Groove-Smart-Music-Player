@@ -8,15 +8,14 @@
  *   GET /api/tidal-download/resolve?title=...&artist=...&isrc=...&quality=... → stream URL
  */
 
-const APP_VERSION = '1.0.0';
 const BROWSER_UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 
+// kinoplus excluded — returns 200 OK with HTML auth wall, not JSON
 const V2_TARGETS = [
   { name: 'squid-api',    baseUrl: 'https://triton.squid.wtf' },
   { name: 'spotisaver-1', baseUrl: 'https://hifi-one.spotisaver.net' },
   { name: 'spotisaver-2', baseUrl: 'https://hifi-two.spotisaver.net' },
-  { name: 'kinoplus',     baseUrl: 'https://tidal.kinoplus.online' },
   { name: 'hund',         baseUrl: 'https://hund.qqdl.site' },
   { name: 'katze',        baseUrl: 'https://katze.qqdl.site' },
   { name: 'maus',         baseUrl: 'https://maus.qqdl.site' },
@@ -25,65 +24,91 @@ const V2_TARGETS = [
   { name: 'monochrome',   baseUrl: 'https://arran.monochrome.tf' },
 ];
 
-const FALLBACK_BASE = 'https://tidal.401658.xyz';
+const FALLBACK_BASE    = 'https://tidal.401658.xyz';
+const TIDAL_V1_TOKEN   = 'CzET4vdadNUFQ5JU';
+const TIDAL_V1_SEARCH  = 'https://listen.tidal.com/v1/search';
 
-function buildHeaders(target) {
-  const headers = { Accept: 'application/json', 'User-Agent': BROWSER_UA };
-  const isCustom =
-    !target.baseUrl.includes('tidal.com') && !target.baseUrl.includes('monochrome.tf');
-  if (isCustom) headers['X-Client'] = `BiniLossless/${APP_VERSION}`;
-  return headers;
-}
+// Parallel mirror race — all mirrors fire simultaneously, first JSON 200 wins
+async function fetchV2(path) {
+  const controllers = new Map();
 
-function selectTarget() {
-  return V2_TARGETS[Math.floor(Math.random() * V2_TARGETS.length)];
-}
+  const racePromises = V2_TARGETS.map(m => {
+    const ac  = new AbortController();
+    controllers.set(m.name, ac);
+    const url = `${m.baseUrl.replace(/\/+$/, '')}${path}`;
 
-async function fetchV2(path, maxAttempts = 10) {
-  const tried = new Set();
-  let lastError = null;
+    return fetch(url, {
+      headers: { Accept: 'application/json', 'User-Agent': BROWSER_UA, 'X-Client': 'BiniLossless/1.0' },
+      signal: ac.signal,
+    })
+    .then(r => {
+      if (!r.ok) throw new Error(`${m.name}: ${r.status}`);
+      const ct = r.headers.get('content-type') || '';
+      if (ct.includes('text/html')) throw new Error(`${m.name}: HTML wall`);
+      return r.clone().json().then(data => ({ response: r, target: m, _data: data }));
+    })
+    .catch(err => { throw err; });
+  });
 
-  for (let i = 0; i < maxAttempts; i++) {
-    const remaining = V2_TARGETS.filter((t) => !tried.has(t.name));
-    if (remaining.length === 0) break;
-    const target = remaining[Math.floor(Math.random() * remaining.length)];
-    tried.add(target.name);
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('mirrors timed out')), 5000)
+  );
 
-    const url = `${target.baseUrl.replace(/\/+$/, '')}${path}`;
+  try {
+    const winner = await Promise.any([...racePromises, timeout]);
+    for (const [name, ac] of controllers) {
+      if (name !== winner.target.name) { try { ac.abort(); } catch {} }
+    }
+    // Synthesize a fake Response from the already-parsed data
+    const fakeBody = JSON.stringify(winner._data);
+    const fakeRes  = new Response(fakeBody, { status: 200, headers: { 'Content-Type': 'application/json' } });
+    return { response: fakeRes, target: winner.target };
+  } catch {
+    for (const ac of controllers.values()) { try { ac.abort(); } catch {} }
+  }
+
+  // Phase 2: TIDAL v1 API (search paths only)
+  if (path.startsWith('/search/')) {
     try {
-      const r = await fetch(url, {
-        headers: buildHeaders(target),
-        signal: AbortSignal.timeout(8000),  // 5s per mirror (was 12s) — fits 6 mirrors in 30s
+      const q = new URLSearchParams(path.replace('/search/?', '')).get('s') || '';
+      const v1Url = `${TIDAL_V1_SEARCH}?query=${encodeURIComponent(q)}&limit=50&countryCode=US&types=TRACKS`;
+      const r = await fetch(v1Url, {
+        headers: { 'x-tidal-token': TIDAL_V1_TOKEN, Origin: 'https://listen.tidal.com', Referer: 'https://listen.tidal.com/', 'User-Agent': BROWSER_UA },
+        signal: AbortSignal.timeout(8000),
       });
-      if (r.ok) return { response: r, target };
-      console.warn(`[tidal-v2] ${target.name} returned ${r.status} for ${path}`);
-      lastError = new Error(`${target.name}: HTTP ${r.status}`);
+      if (r.ok) {
+        const raw   = await r.json();
+        const items = raw.tracks?.items || [];
+        const body  = JSON.stringify({ data: items });
+        return { response: new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } }), target: { name: 'tidal-v1', baseUrl: TIDAL_V1_SEARCH } };
+      }
     } catch (err) {
-      console.warn(`[tidal-v2] ${target.name} failed: ${err.message}`);
-      lastError = err;
+      console.warn('[tidal-v2] TIDAL v1 fallback failed:', err.message);
     }
   }
 
-  // Last resort fallback
+  // Phase 3: 401658 last resort
   try {
     const url = `${FALLBACK_BASE}${path}`;
-    const r = await fetch(url, {
-      headers: { Accept: 'application/json', 'User-Agent': BROWSER_UA },
-      signal: AbortSignal.timeout(8000),
-    });
+    const r = await fetch(url, { headers: { Accept: 'application/json', 'User-Agent': BROWSER_UA }, signal: AbortSignal.timeout(8000) });
     if (r.ok) return { response: r, target: { name: 'fallback', baseUrl: FALLBACK_BASE } };
   } catch (err) {
-    console.warn(`[tidal-v2] Fallback also failed: ${err.message}`);
+    console.warn('[tidal-v2] Fallback also failed:', err.message);
   }
 
-  throw lastError || new Error('All TIDAL proxy mirrors failed');
+  throw new Error('All TIDAL proxy mirrors failed');
 }
 
+// Handles all V2 response shapes: { data: [...] }, { items: [...] }, bare [...]
 function findItems(obj, visited = new WeakSet()) {
   if (!obj || typeof obj !== 'object') return null;
+  if (Array.isArray(obj)) {
+    return obj.length > 0 && (obj[0]?.id !== undefined || obj[0]?.title !== undefined) ? obj : null;
+  }
   if (visited.has(obj)) return null;
   visited.add(obj);
-  if (Array.isArray(obj.items)) return obj.items;
+  if (Array.isArray(obj.items) && obj.items.length > 0) return obj.items;
+  if (Array.isArray(obj.data))  return obj.data;
   for (const val of Object.values(obj)) {
     if (val && typeof val === 'object') {
       const found = findItems(val, visited);
