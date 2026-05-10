@@ -10,18 +10,10 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'http://localhost:3001',
+                target: 'https://smusic-backend-production.up.railway.app',
                 changeOrigin: true,
-                secure: false,
+                secure: true,
             }
-        },
-        watch: {
-            // Ignore server-side files and any debug output files
-            ignored: [
-                '**/server/**',
-                '**/node_modules/**',
-                '**/*.json',
-            ]
         }
     }
 })

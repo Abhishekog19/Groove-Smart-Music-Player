@@ -6,24 +6,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "server": "node server/index.js",
-    "dev:all": "concurrently \"npm run dev\" \"npm run server\""
+    "preview": "vite preview"
   },
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
-    "archiver": "^7.0.1",
-    "axios": "^1.13.6",
     "clsx": "^2.1.1",
-    "concurrently": "^9.2.1",
-    "cors": "^2.8.6",
     "date-fns": "^4.1.0",
     "dexie": "^4.3.0",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
     "howler": "^2.2.4",
-    "ioredis": "^5.10.1",
     "jszip": "^3.10.1",
     "lucide-react": "^0.460.0",
     "music-metadata-browser": "^2.5.11",
