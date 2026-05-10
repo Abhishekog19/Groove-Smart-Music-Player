@@ -30,7 +30,7 @@ export function useRecommendations(currentSong, limit = 8) {
       : rawArtist?.name || ''
     ).trim();
 
-    if (!title || !artist || currentSong?.sourceType !== 'tidal') {
+    if (!title || !artist) {
       setTracks([]); setStatus('idle');
       lastKeyRef.current = null;
       return;

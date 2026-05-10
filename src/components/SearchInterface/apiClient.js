@@ -23,20 +23,87 @@ export class ApiClient {
   // SEARCH
   // ===========================================================================
 
+  /**
+   * Normalize a search query for better fuzzy matching:
+   *   - Trim and collapse whitespace
+   *   - Remove punctuation that confuses mirrors (apostrophes, hyphens mid-word)
+   *   - Lowercase for internal dedup but preserve original for actual query
+   */
+  _normalizeQuery(query) {
+    return query
+      .trim()
+      .replace(/\s+/g, ' ')
+      // remove special chars that often break exact matching
+      .replace(/[''`]/g, '')       // smart quotes / apostrophes
+      .replace(/[–—]/g, '-')       // em/en dashes → hyphen
+      .replace(/[^\w\s\-&]/g, ' ') // strip remaining non-word chars
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /**
+   * Fast search via Railway's /api/tidal-download/search.
+   * Railway races ALL mirrors simultaneously (Promise.any) → ~1-2s response.
+   * Falls back to the old sequential mirror chain if Railway is unreachable.
+   *
+   * Also tries a fuzzy-normalized variant if exact query returns 0 results.
+   */
   async searchTracks(query, region = 'auto') {
-    return tidalAPI.searchTracks(query, region);
+    const original = query?.trim() || '';
+    const normalized = this._normalizeQuery(original);
+    const queries = [original];
+    if (normalized !== original) queries.push(normalized);
+
+    for (const q of queries) {
+      // ── Fast path: Railway parallel mirror race ─────────────────────────────
+      try {
+        const url = `/api/tidal-download/search?q=${encodeURIComponent(q)}&limit=30`;
+        const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
+        if (res.ok) {
+          const data = await res.json();
+          const items = (data.results || []).map(track => ({
+            id: track.id,
+            title: track.title,
+            duration: track.durationMs ? Math.floor(track.durationMs / 1000) : 0,
+            audioQuality: track.audioQuality || 'LOSSLESS',
+            artist: { id: 0, name: track.artist || '' },
+            artists: [{ id: 0, name: track.artist || '' }],
+            album: {
+              id: 0,
+              title: track.album || '',
+              cover: track.albumCoverId || null,
+            },
+            // Pre-built cover URL for UI convenience
+            thumbnailUrl: track.albumArt || null,
+          }));
+          if (items.length > 0) {
+            return { items, totalNumberOfItems: items.length, limit: items.length, offset: 0 };
+          }
+        }
+      } catch (err) {
+        console.warn('[ApiClient/search] Railway fast path failed, falling back:', err.message);
+      }
+    }
+
+    // ── Slow fallback: original sequential mirror chain ─────────────────────
+    try {
+      return await tidalAPI.searchTracks(normalized || original, region);
+    } catch (err) {
+      console.error('[ApiClient/search] All search paths failed:', err.message);
+      return { items: [], totalNumberOfItems: 0, limit: 0, offset: 0 };
+    }
   }
 
   async searchAlbums(query, region = 'auto') {
-    return tidalAPI.searchAlbums(query, region);
+    return tidalAPI.searchAlbums(this._normalizeQuery(query), region);
   }
 
   async searchArtists(query, region = 'auto') {
-    return tidalAPI.searchArtists(query, region);
+    return tidalAPI.searchArtists(this._normalizeQuery(query), region);
   }
 
   async searchPlaylists(query, region = 'auto') {
-    return tidalAPI.searchPlaylists(query, region);
+    return tidalAPI.searchPlaylists(this._normalizeQuery(query), region);
   }
 
 
