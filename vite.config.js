@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-const RAILWAY_URL = 'https://smusic-backend-production.up.railway.app';
+const BACKEND_URL = 'https://smusic-backend.onrender.com'; // 🔁 Update this with your actual Render URL
 
 export default defineConfig({
     plugins: [
@@ -12,9 +12,9 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: RAILWAY_URL,
+                target: BACKEND_URL,
                 changeOrigin: true,
-                secure: false,          // don't verify Railway's TLS cert in dev
+                secure: true,
                 rewrite: (path) => path // keep /api/... path as-is
             }
         }

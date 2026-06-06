@@ -3,7 +3,7 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://smusic-backend-production.up.railway.app/api/$1" },
+    { "source": "/api/(.*)", "destination": "https://smusic-backend.onrender.com/api/$1" },
     { "source": "/(.*)",     "destination": "/index.html" }
   ],
   "headers": [
