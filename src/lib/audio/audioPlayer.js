@@ -2,6 +2,9 @@ import { Howl, Howler } from 'howler';
 import { getAudioBlob, getAudioFile } from '../db/indexedDB';
 import { db } from '../db/indexedDB';
 import { extractStreamUrl as parseManifestUrl } from '../tidal/manifestParser.js';
+// Static import — dynamic import('../tidal/index.js') breaks Vite production builds
+// because chunks get renamed (e.g. index-CuyoZGbS.js) and the path no longer resolves.
+import { tidalAPI } from '../tidal/index.js';
 
 // Increase the HTML5 audio pool size (default is 10) so rapid song changes
 // don't exhaust the pool and return locked audio elements that ignore seeks.
@@ -117,8 +120,8 @@ class AudioPlayerManager {
                         const data = await resolveRes.json();
                         streamUrl = data.streamUrl || null;
                     } else {
-                        // Backend resolve failed — fall back to direct tidalAPI silently
-                        const { tidalAPI } = await import('../tidal/index.js');
+                        // Backend resolve failed — fall back to direct tidalAPI
+                        // Uses statically imported tidalAPI (dynamic import breaks Vite prod builds)
                         for (const quality of ['LOSSLESS', 'HIGH', 'LOW']) {
                             try {
                                 const lookup = await tidalAPI.getTrack(song.tidalId, quality);
@@ -126,10 +129,7 @@ class AudioPlayerManager {
                                 if (manifest) {
                                     streamUrl = tidalAPI.extractStreamUrlFromManifest?.(manifest) || null;
                                     if (!streamUrl) {
-                                        // Use the full manifest parser as a robust fallback:
-                                        // handles JSON .urls[], DASH XML <BaseURL>, and regex extraction.
-                                        // The old JSON.parse(decoded)?.urls?.[0] only worked for JSON manifests
-                                        // and silently failed on DASH XML (which is now the common format).
+                                        // Full manifest parser: handles JSON .urls[], DASH XML <BaseURL>, regex
                                         streamUrl = parseManifestUrl(manifest) || null;
                                     }
                                 }

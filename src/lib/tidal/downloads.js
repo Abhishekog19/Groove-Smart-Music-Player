@@ -90,32 +90,56 @@ async function downloadTrackWithRetry(trackId, quality, filename, track, callbac
   const baseDelay = 1e3;
   const trackTitle = track.title ?? "Unknown Track";
   const artistName = formatArtists(track.artists);
-  console.log(`[Track Download] Starting download: "${trackTitle}" by ${artistName} (ID: ${trackId}, Quality: ${quality})`);
+  console.log(`[Track Download] Starting: "${trackTitle}" by ${artistName} (ID: ${trackId}, Quality: ${quality})`);
+
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       if (attempt > 1) {
         console.log(`[Track Download] Retry attempt ${attempt}/${maxAttempts} for "${trackTitle}"`);
       }
-      const { blob } = await losslessAPI.fetchTrackBlob(trackId, quality, filename, {
-        ffmpegAutoTriggered: false,
-        convertAacToMp3: options?.convertAacToMp3
+
+      // Step 1: Resolve stream URL via backend (uses live mirrors + quality fallback chain)
+      const resolveUrl = `/api/tidal-download/resolve?title=${encodeURIComponent(track.title ?? "")}&artist=${encodeURIComponent(artistName)}&quality=${quality}`;
+      const resolveRes = await fetch(resolveUrl, { cache: "no-store", signal: AbortSignal.timeout(30000) });
+
+      if (!resolveRes.ok) {
+        const errData = await resolveRes.json().catch(() => ({}));
+        throw new Error(`Resolve failed (${resolveRes.status}): ${errData.details || errData.error || "unknown"}`);
+      }
+
+      const { streamUrl, format: resolvedFormat } = await resolveRes.json();
+      if (!streamUrl) throw new Error("Backend returned no stream URL");
+
+      // Step 2: Fetch audio blob via audio-proxy (handles CORS for TIDAL CDN URLs)
+      const isTidalCdn = /\.tidal\.com|tidal\.com\/|audio\.tidal/i.test(streamUrl);
+      const fetchUrl = isTidalCdn
+        ? `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`
+        : streamUrl;
+
+      const audioRes = await fetch(fetchUrl, {
+        signal: AbortSignal.timeout(120000), // 2 min for large FLAC files
+        headers: { "Accept": "audio/flac, audio/mp4, audio/*, */*" }
       });
-      console.log(`[Track Download] \u2713 Success: "${trackTitle}" (${(blob.size / 1024 / 1024).toFixed(2)} MB)${attempt > 1 ? ` - succeeded on attempt ${attempt}` : ""}`);
+
+      if (!audioRes.ok) throw new Error(`Audio fetch failed (${audioRes.status})`);
+
+      const blob = await audioRes.blob();
+      if (blob.size === 0) throw new Error("Downloaded file is empty");
+
+      console.log(`[Track Download] \u2713 "${trackTitle}" — ${(blob.size / 1024 / 1024).toFixed(2)} MB via backend`);
       return { success: true, blob };
+
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error(String(error));
-      console.warn(
-        `[Track Download] \u2717 Attempt ${attempt}/${maxAttempts} failed for "${trackTitle}": ${errorObj.message}`
-      );
+      console.warn(`[Track Download] \u2717 Attempt ${attempt}/${maxAttempts} failed for "${trackTitle}": ${errorObj.message}`);
       callbacks?.onTrackFailed?.(track, errorObj, attempt);
+
       if (attempt < maxAttempts) {
         const delay = baseDelay * Math.pow(2, attempt - 1);
         console.log(`[Track Download] Waiting ${delay}ms before retry...`);
         await new Promise((resolve) => setTimeout(resolve, delay));
       } else {
-        console.error(
-          `[Track Download] \u2717\u2717\u2717 All ${maxAttempts} attempts failed for "${trackTitle}" - giving up`
-        );
+        console.error(`[Track Download] \u2717\u2717\u2717 All ${maxAttempts} attempts failed for "${trackTitle}"`);
         return { success: false, error: errorObj };
       }
     }
