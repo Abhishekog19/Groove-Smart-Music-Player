@@ -1,41 +1,64 @@
+// Dynamic mirror discovery — replaces static hardcoded list
+import { getLiveMirrors, getFallbackMirrors } from './mirrorDiscovery.js';
+
 // API Configuration — converted from SvelteKit to React
 // Removed: import { APP_VERSION } from '$lib/version'
 const APP_VERSION = '1.0.0';
 
-const V2_API_TARGETS = [
-  // requiresProxy: true → all calls go through /api/proxy (server-side),
-  // avoiding ERR_NAME_NOT_RESOLVED when these domains are unreachable from the browser.
-  { name: 'squid-api', baseUrl: 'https://triton.squid.wtf', weight: 15, requiresProxy: true, category: 'auto-only' },
-  { name: 'spotisaver-1', baseUrl: 'https://hifi-one.spotisaver.net', weight: 15, requiresProxy: true, category: 'auto-only' },
-  { name: 'spotisaver-2', baseUrl: 'https://hifi-two.spotisaver.net', weight: 15, requiresProxy: true, category: 'auto-only' },
-  { name: 'kinoplus', baseUrl: 'https://tidal.kinoplus.online', weight: 15, requiresProxy: true, category: 'auto-only' },
-  { name: 'hund', baseUrl: 'https://hund.qqdl.site', weight: 15, requiresProxy: true, category: 'auto-only' },
-  { name: 'katze', baseUrl: 'https://katze.qqdl.site', weight: 15, requiresProxy: true, category: 'auto-only' },
-  { name: 'maus', baseUrl: 'https://maus.qqdl.site', weight: 15, requiresProxy: true, category: 'auto-only' },
-  { name: 'vogel', baseUrl: 'https://vogel.qqdl.site', weight: 15, requiresProxy: true, category: 'auto-only' },
-  { name: 'wolf', baseUrl: 'https://wolf.qqdl.site', weight: 15, requiresProxy: true, category: 'auto-only' },
-  { name: 'monochrome', baseUrl: 'https://arran.monochrome.tf', weight: 15, requiresProxy: true, category: 'auto-only' },
+// NOTE: All previously hardcoded mirrors (squid.wtf, spotisaver.net, qqdl.site)
+// are confirmed DEAD as of 2026-06-08 (504 Track unreachable per uptime workers).
+// We now start with the known-good fallback and refresh dynamically.
+let V2_API_TARGETS = [
+  // requiresProxy: true → all calls go through /api/proxy (server-side)
+  { name: 'monochrome-eu', baseUrl: 'https://eu-central.monochrome.tf', weight: 15, requiresProxy: true, category: 'auto-only' },
+  { name: 'monochrome-us', baseUrl: 'https://us-west.monochrome.tf', weight: 15, requiresProxy: true, category: 'auto-only' },
+  { name: 'monochrome-api', baseUrl: 'https://api.monochrome.tf', weight: 10, requiresProxy: true, category: 'auto-only' },
+  { name: 'samidy', baseUrl: 'https://monochrome-api.samidy.com', weight: 10, requiresProxy: true, category: 'auto-only' },
 ];
 
 const ALL_API_TARGETS = [...V2_API_TARGETS];
 const US_API_TARGETS = [];
-const TARGET_COLLECTIONS = {
-  auto: [...ALL_API_TARGETS],
-  eu: [],
-  us: [...US_API_TARGETS]
-};
 
-const TARGETS = TARGET_COLLECTIONS.auto;
-
+// NOTE: These used to be static spreads but V2_API_TARGETS is now mutable.
+// TARGET_COLLECTIONS.auto is updated by refreshMirrors() via API_CONFIG.targets.
 export const API_CONFIG = {
-  targets: TARGETS,
-  baseUrl: TARGETS[0]?.baseUrl ?? 'https://tidal.401658.xyz',
+  targets: [...V2_API_TARGETS],
+  baseUrl: V2_API_TARGETS[0]?.baseUrl ?? 'https://eu-central.monochrome.tf',
   useProxy: true,
   proxyUrl: '/api/proxy'
 };
 
 let v1WeightedTargets = null;
 let v2WeightedTargets = null;
+
+/**
+ * Refresh the live mirror list from Cloudflare Workers.
+ * Invalidates the weighted target cache so the next selection picks fresh mirrors.
+ * Called once on module load and can be called again manually.
+ */
+export async function refreshMirrors() {
+  try {
+    const liveMirrors = await getLiveMirrors();
+    if (liveMirrors && liveMirrors.length > 0) {
+      V2_API_TARGETS = liveMirrors;
+      // Invalidate weighted caches so they rebuild with new mirrors
+      v1WeightedTargets = null;
+      v2WeightedTargets = null;
+      // Update API_CONFIG base URL
+      API_CONFIG.targets = [...V2_API_TARGETS];
+      API_CONFIG.baseUrl = V2_API_TARGETS[0]?.baseUrl ?? API_CONFIG.baseUrl;
+      console.log(`[config] Mirror list updated: ${V2_API_TARGETS.length} mirrors via ${V2_API_TARGETS[0]?.name}`);
+    }
+  } catch (err) {
+    console.warn('[config] Mirror refresh failed, keeping current list:', err.message);
+  }
+}
+
+// Kick off initial mirror refresh (non-blocking — don't await on module load)
+refreshMirrors();
+
+// Re-refresh every 15 minutes to stay current
+setInterval(refreshMirrors, 15 * 60 * 1000);
 
 function buildWeightedTargets(targets) {
   const validTargets = targets.filter((target) => {
@@ -60,8 +83,9 @@ function ensureWeightedTargets(apiVersion = 'v2') {
     return v2WeightedTargets;
   } else {
     if (!v1WeightedTargets) {
+      // v1 fallback: use current V2_API_TARGETS at lower weight
       const v2Fallback = V2_API_TARGETS.map((t) => ({ ...t, weight: 1 }));
-      v1WeightedTargets = buildWeightedTargets([...ALL_API_TARGETS, ...v2Fallback]);
+      v1WeightedTargets = buildWeightedTargets([...V2_API_TARGETS, ...v2Fallback]);
     }
     return v1WeightedTargets;
   }
@@ -87,8 +111,9 @@ function selectFromWeightedTargets(weighted) {
 }
 
 export function getTargetsForRegion(region = 'auto') {
-  const targets = TARGET_COLLECTIONS[region];
-  return Array.isArray(targets) ? targets : [];
+  // eu/us specific targets are not currently populated — all traffic uses auto (V2_API_TARGETS)
+  if (region === 'auto') return [...V2_API_TARGETS];
+  return []; // eu/us not yet configured
 }
 
 export function selectApiTargetForRegion(region) {

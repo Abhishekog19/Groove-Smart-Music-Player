@@ -1,6 +1,7 @@
 import { Howl, Howler } from 'howler';
 import { getAudioBlob, getAudioFile } from '../db/indexedDB';
 import { db } from '../db/indexedDB';
+import { extractStreamUrl as parseManifestUrl } from '../tidal/manifestParser.js';
 
 // Increase the HTML5 audio pool size (default is 10) so rapid song changes
 // don't exhaust the pool and return locked audio elements that ignore seeks.
@@ -125,10 +126,11 @@ class AudioPlayerManager {
                                 if (manifest) {
                                     streamUrl = tidalAPI.extractStreamUrlFromManifest?.(manifest) || null;
                                     if (!streamUrl) {
-                                        try {
-                                            const decoded = atob(manifest.replace(/-/g, '+').replace(/_/g, '/'));
-                                            streamUrl = JSON.parse(decoded)?.urls?.[0] ?? null;
-                                        } catch { /* ignore */ }
+                                        // Use the full manifest parser as a robust fallback:
+                                        // handles JSON .urls[], DASH XML <BaseURL>, and regex extraction.
+                                        // The old JSON.parse(decoded)?.urls?.[0] only worked for JSON manifests
+                                        // and silently failed on DASH XML (which is now the common format).
+                                        streamUrl = parseManifestUrl(manifest) || null;
                                     }
                                 }
                                 if (streamUrl) break;
