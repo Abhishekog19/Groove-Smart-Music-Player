@@ -107,42 +107,52 @@ class AudioPlayerManager {
                 // ── Strategy 2: TIDAL stream ──────────────────────────────────
             } else if (song.sourceType === 'tidal' && song.tidalId) {
                 try {
-                    // Route through backend resolve endpoint — it retries mirrors
-                    // server-side so the browser makes exactly ONE request.
-                    const resolveRes = await fetch(
-                        `/api/tidal-download/resolve?title=${encodeURIComponent(song.title || '')}&artist=${encodeURIComponent(song.artist?.name || song.artist || '')}&quality=LOSSLESS`,
-                        { cache: 'no-store' }
-                    );
+                    // Build query — include tidalId so backend can skip search if supported
+                    const q = new URLSearchParams({
+                        title:   song.title   || '',
+                        artist:  song.artist?.name || song.artist || '',
+                        quality: 'LOSSLESS',
+                    });
+                    if (song.tidalId) q.set('tidalId', song.tidalId);
 
                     let streamUrl = null;
 
-                    if (resolveRes.ok) {
-                        const data = await resolveRes.json();
-                        streamUrl = data.streamUrl || null;
-                    } else {
-                        // Backend resolve failed — fall back to direct tidalAPI
-                        // Uses statically imported tidalAPI (dynamic import breaks Vite prod builds)
-                        for (const quality of ['LOSSLESS', 'HIGH', 'LOW']) {
-                            try {
-                                const lookup = await tidalAPI.getTrack(song.tidalId, quality);
-                                const manifest = lookup?.info?.manifest;
-                                if (manifest) {
-                                    streamUrl = tidalAPI.extractStreamUrlFromManifest?.(manifest) || null;
-                                    if (!streamUrl) {
-                                        // Full manifest parser: handles JSON .urls[], DASH XML <BaseURL>, regex
-                                        streamUrl = parseManifestUrl(manifest) || null;
-                                    }
-                                }
+                    // Two-pass strategy to handle Render cold starts (~50 seconds on free tier):
+                    // Pass 1: fast timeout (20s) — works when backend is warm
+                    // Pass 2: long timeout (65s) — waits out the cold start
+                    const passes = [
+                        { timeout: 20_000, label: 'warm' },
+                        { timeout: 65_000, label: 'cold-start' },
+                    ];
+
+                    for (const { timeout, label } of passes) {
+                        try {
+                            const resolveRes = await fetch(
+                                `/api/tidal-download/resolve?${q.toString()}`,
+                                { cache: 'no-store', signal: AbortSignal.timeout(timeout) }
+                            );
+                            if (resolveRes.ok) {
+                                const data = await resolveRes.json();
+                                streamUrl = data.streamUrl || null;
                                 if (streamUrl) break;
-                            } catch { /* try next quality */ }
+                            } else {
+                                const err = await resolveRes.json().catch(() => ({}));
+                                console.warn(`[audioPlayer] /resolve ${label} failed (${resolveRes.status}):`, err.details || err.error);
+                                // On a 502 (mirror failure) retry with next pass; on 4xx stop
+                                if (resolveRes.status < 500) break;
+                            }
+                        } catch (passErr) {
+                            console.warn(`[audioPlayer] /resolve ${label} error:`, passErr.message);
+                            // If last pass, give up
                         }
                     }
 
                     if (!streamUrl) {
-                        this.onLoadError?.('Could not resolve TIDAL stream URL.');
+                        this.onLoadError?.('Could not resolve TIDAL stream — backend unreachable.');
                         return false;
                     }
 
+                    // All TIDAL CDN URLs need the audio-proxy (CORS + token in header)
                     const isTidalCdn = /\.tidal\.com|tidal\.com\/|audio\.tidal/i.test(streamUrl);
                     audioUrl = isTidalCdn
                         ? `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`

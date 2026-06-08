@@ -124,7 +124,7 @@ export function selectApiTargetForRegion(region) {
 }
 
 export function hasRegionTargets(region) {
-  if (region === 'auto') return TARGET_COLLECTIONS.auto.length > 0;
+  if (region === 'auto') return V2_API_TARGETS.length > 0;
   return getTargetsForRegion(region).length > 0;
 }
 
