@@ -33,6 +33,8 @@ export function useAudioPlayer() {
         setNeedsFolderPermission,
         seekOnLoad,
         clearSeekOnLoad,
+        setStreamError,
+        clearStreamError,
     } = usePlayerStore();
 
     // Throttle: only write to localStorage once every 5 seconds
@@ -92,6 +94,11 @@ export function useAudioPlayer() {
             console.error('[useAudioPlayer] Load error:', msg);
             if (msg && msg.includes('not accessible')) {
                 setNeedsFolderPermission(true);
+            } else if (msg && (msg.includes('TIDAL') || msg.includes('mirror') || msg.includes('stream'))) {
+                // Surface TIDAL-specific errors as a dismissible toast
+                setStreamError(msg);
+            } else if (msg) {
+                setStreamError(msg);
             }
         };
 
@@ -141,6 +148,8 @@ export function useAudioPlayer() {
         setDuration(currentSong.durationSeconds || 0);
 
         const loadAndPlay = async () => {
+            // Clear any previous stream error when loading a new song
+            clearStreamError();
             const loaded = await audioPlayer.loadSong(currentSong);
             if (!loaded) return;
 

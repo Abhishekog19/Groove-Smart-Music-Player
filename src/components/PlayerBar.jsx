@@ -1,7 +1,8 @@
-import { Play, Pause, SkipBack, SkipForward, Heart, Volume2, VolumeX, ChevronUp } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Heart, Volume2, VolumeX, ChevronUp, AlertCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePlayerStore } from '../store/store.js';
 import { audioPlayer } from '../lib/audio/audioPlayer';
+import { useEffect } from 'react';
 
 function CoverArt({ song, size = 44 }) {
   const style = { width: size, height: size, flexShrink: 0, borderRadius: 8, overflow: 'hidden', background: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center' };
@@ -13,7 +14,14 @@ function CoverArt({ song, size = 44 }) {
 
 export default function PlayerBar() {
   const navigate = useNavigate();
-  const { currentSong, isPlaying, volume, likedSongs, currentTime, duration, togglePlay, toggleLike, nextSong, previousSong, setVolume, setCurrentTime } = usePlayerStore();
+  const { currentSong, isPlaying, volume, likedSongs, currentTime, duration, togglePlay, toggleLike, nextSong, previousSong, setVolume, setCurrentTime, streamError, clearStreamError } = usePlayerStore();
+
+  // Auto-dismiss stream error after 8 seconds
+  useEffect(() => {
+    if (!streamError) return;
+    const t = setTimeout(clearStreamError, 8000);
+    return () => clearTimeout(t);
+  }, [streamError, clearStreamError]);
 
   if (!currentSong) return null;
 
@@ -33,6 +41,32 @@ export default function PlayerBar() {
 
   return (
     <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50 }}>
+      {/* Stream error toast */}
+      {streamError && (
+        <div style={{
+          background: 'linear-gradient(90deg, rgba(220,38,38,0.92), rgba(185,28,28,0.92))',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          padding: '0.5rem 1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.6rem',
+          fontSize: '0.8rem',
+          color: '#fff',
+          borderTop: '1px solid rgba(255,255,255,0.15)',
+          animation: 'slideUp 0.2s ease',
+        }}>
+          <AlertCircle size={15} style={{ flexShrink: 0, opacity: 0.9 }} />
+          <span style={{ flex: 1 }}>{streamError}</span>
+          <button
+            onClick={clearStreamError}
+            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: '2px', opacity: 0.8, display: 'flex', alignItems: 'center' }}
+            title="Dismiss"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
       {/* Seek bar */}
       <div
         onClick={handleSeek}

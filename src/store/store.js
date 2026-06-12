@@ -19,6 +19,11 @@ export const usePlayerStore = create((set, get) => ({
     needsFolderPermission: false,
     setNeedsFolderPermission: (val) => set({ needsFolderPermission: val }),
 
+    // Stream error toast — shown when TIDAL mirrors fail to provide audio
+    streamError: null, // null | string
+    setStreamError: (msg) => set({ streamError: msg }),
+    clearStreamError: () => set({ streamError: null }),
+
     // Actions
     playSong: (song) => {
         const { songs } = useLibraryStore.getState()

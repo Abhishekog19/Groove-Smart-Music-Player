@@ -107,48 +107,79 @@ class AudioPlayerManager {
                 // ── Strategy 2: TIDAL stream ──────────────────────────────────
             } else if (song.sourceType === 'tidal' && song.tidalId) {
                 try {
-                    // Build query — include tidalId so backend can skip search if supported
-                    const q = new URLSearchParams({
-                        title:   song.title   || '',
-                        artist:  song.artist?.name || song.artist || '',
-                        quality: 'LOSSLESS',
-                    });
-                    if (song.tidalId) q.set('tidalId', song.tidalId);
-
                     let streamUrl = null;
 
-                    // Two-pass strategy to handle Render cold starts (~50 seconds on free tier):
-                    // Pass 1: fast timeout (20s) — works when backend is warm
-                    // Pass 2: long timeout (65s) — waits out the cold start
-                    const passes = [
-                        { timeout: 20_000, label: 'warm' },
-                        { timeout: 65_000, label: 'cold-start' },
-                    ];
+                    /**
+                     * resolveQuality — calls /api/tidal-download/resolve for a given quality tier.
+                     * Returns { streamUrl, isMirrorBan, isAllDown } or throws on network failure.
+                     *
+                     * Two-pass cold-start strategy:
+                     *   Pass 1 (20s timeout)  — works when Render backend is warm
+                     *   Pass 2 (65s timeout)  — waits out Render free-tier cold start
+                     */
+                    const resolveQuality = async (quality) => {
+                        const q = new URLSearchParams({
+                            title:   song.title   || '',
+                            artist:  song.artist?.name || song.artist || '',
+                            quality,
+                        });
+                        if (song.tidalId) q.set('tidalId', song.tidalId);
 
-                    for (const { timeout, label } of passes) {
-                        try {
-                            const resolveRes = await fetch(
-                                `/api/tidal-download/resolve?${q.toString()}`,
-                                { cache: 'no-store', signal: AbortSignal.timeout(timeout) }
-                            );
-                            if (resolveRes.ok) {
-                                const data = await resolveRes.json();
-                                streamUrl = data.streamUrl || null;
-                                if (streamUrl) break;
-                            } else {
+                        const passes = [
+                            { timeout: 20_000, label: 'warm' },
+                            { timeout: 65_000, label: 'cold-start' },
+                        ];
+
+                        for (const { timeout, label } of passes) {
+                            try {
+                                const resolveRes = await fetch(
+                                    `/api/tidal-download/resolve?${q.toString()}`,
+                                    { cache: 'no-store', signal: AbortSignal.timeout(timeout) }
+                                );
+                                if (resolveRes.ok) {
+                                    const data = await resolveRes.json();
+                                    return { streamUrl: data.streamUrl || null, isMirrorBan: false, isAllDown: false };
+                                }
                                 const err = await resolveRes.json().catch(() => ({}));
-                                console.warn(`[audioPlayer] /resolve ${label} failed (${resolveRes.status}):`, err.details || err.error);
-                                // On a 502 (mirror failure) retry with next pass; on 4xx stop
-                                if (resolveRes.status < 500) break;
+                                console.warn(`[audioPlayer] /resolve ${label} (${quality}) failed (${resolveRes.status}):`, err.details || err.error);
+                                // 403 = mirror accounts banned for this quality tier — try lower quality
+                                if (resolveRes.status === 403) return { streamUrl: null, isMirrorBan: true, isAllDown: false };
+                                // Other 4xx = hard error (track not found etc.) — stop
+                                if (resolveRes.status < 500) return { streamUrl: null, isMirrorBan: false, isAllDown: false };
+                                // 5xx (502/503) — retry with next pass
+                            } catch (passErr) {
+                                console.warn(`[audioPlayer] /resolve ${label} (${quality}) error:`, passErr.message);
+                                // If last pass, give up
                             }
-                        } catch (passErr) {
-                            console.warn(`[audioPlayer] /resolve ${label} error:`, passErr.message);
-                            // If last pass, give up
                         }
+                        return { streamUrl: null, isMirrorBan: false, isAllDown: true };
+                    };
+
+                    // ── Quality tier cascade: LOSSLESS → HIGH → LOW ─────────────
+                    // LOSSLESS requires upgraded TIDAL accounts on the proxy mirror.
+                    // When those accounts are banned (403), HIGH (AAC 320kbps) often
+                    // still works because it uses a different access tier.
+                    const qualityChain = ['LOSSLESS', 'HIGH', 'LOW'];
+                    let lastBanOrDown = false;
+
+                    for (const quality of qualityChain) {
+                        const { streamUrl: url, isMirrorBan, isAllDown } = await resolveQuality(quality);
+                        if (url) {
+                            streamUrl = url;
+                            if (quality !== 'LOSSLESS') {
+                                console.log(`[audioPlayer] Quality degraded to ${quality} (LOSSLESS mirrors unavailable)`);
+                            }
+                            break;
+                        }
+                        lastBanOrDown = isMirrorBan || isAllDown;
+                        if (!isMirrorBan) break; // non-ban error — don't try lower quality
                     }
 
                     if (!streamUrl) {
-                        this.onLoadError?.('Could not resolve TIDAL stream — backend unreachable.');
+                        const msg = lastBanOrDown
+                            ? 'TIDAL streaming mirrors are temporarily unavailable (accounts blocked). Please try again in a few minutes.'
+                            : 'Could not resolve TIDAL stream — backend unreachable.';
+                        this.onLoadError?.(msg);
                         return false;
                     }
 
