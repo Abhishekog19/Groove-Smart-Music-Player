@@ -92,7 +92,8 @@ class AudioPlayerManager {
             this.stop();
 
             let audioUrl = null;
-            const format = resolveFormat(song);
+            let format = resolveFormat(song);
+            let dashMimeType = null; // set when backend returns DASH segments
 
             // ── Strategy 1: folder-scanned song ──────────────────────────
             if (song.sourceType === 'folder' && song.filePath) {
@@ -108,13 +109,18 @@ class AudioPlayerManager {
             } else if (song.sourceType === 'tidal' && song.tidalId) {
                 try {
                     let streamUrl = null;
+                    let dashBlobUrl = null;
 
                     /**
                      * resolveQuality — calls /api/tidal-download/resolve for a given quality tier.
-                     * Returns { streamUrl, isMirrorBan, isAllDown } or throws on network failure.
+                     *
+                     * Returns one of:
+                     *   { streamUrl: '<url>', isMirrorBan: false, isAllDown: false }   — direct stream
+                     *   { dashBlobUrl: '<blob:...>', isMirrorBan: false, isAllDown: false } — DASH stitched
+                     *   { streamUrl: null, isMirrorBan: true/false, isAllDown: true/false } — failure
                      *
                      * Two-pass cold-start strategy:
-                     *   Pass 1 (20s timeout)  — works when Render backend is warm
+                     *   Pass 1 (20s timeout)  — works when Render/Railway backend is warm
                      *   Pass 2 (65s timeout)  — waits out Render free-tier cold start
                      */
                     const resolveQuality = async (quality) => {
@@ -136,10 +142,48 @@ class AudioPlayerManager {
                                     `/api/tidal-download/resolve?${q.toString()}`,
                                     { cache: 'no-store', signal: AbortSignal.timeout(timeout) }
                                 );
+
                                 if (resolveRes.ok) {
                                     const data = await resolveRes.json();
+
+                                    // ── DASH segment response ──────────────────────────────
+                                    // Backend returns { format: 'dash', segmentUrls: [...] }
+                                    // We must fetch all segments via /api/audio-proxy (CORS),
+                                    // concatenate into a single Blob, and return an object URL.
+                                    if (data.format === 'dash' && Array.isArray(data.segmentUrls) && data.segmentUrls.length > 0) {
+                                        console.log(`[audioPlayer] DASH detected (${quality}) — ${data.segmentUrls.length} segments. Stitching...`);
+                                        try {
+                                            const buffers = await Promise.all(
+                                                data.segmentUrls.map(async (segUrl) => {
+                                                    const proxyUrl = `/api/audio-proxy?url=${encodeURIComponent(segUrl)}`;
+                                                    const r = await fetch(proxyUrl, { signal: AbortSignal.timeout(30_000) });
+                                                    if (!r.ok) throw new Error(`Segment fetch failed: ${r.status} for ${segUrl.substring(0, 60)}`);
+                                                    return r.arrayBuffer();
+                                                })
+                                            );
+                                            const totalBytes = buffers.reduce((s, b) => s + b.byteLength, 0);
+                                            const combined = new Uint8Array(totalBytes);
+                                            let offset = 0;
+                                            for (const buf of buffers) {
+                                                combined.set(new Uint8Array(buf), offset);
+                                                offset += buf.byteLength;
+                                            }
+                                            const mimeType = data.mimeType || 'audio/mp4';
+                                            const blob = new Blob([combined], { type: mimeType });
+                                            const blobUrl = URL.createObjectURL(blob);
+                                            console.log(`[audioPlayer] DASH stitched: ${totalBytes} bytes → blob URL`);
+                                            return { dashBlobUrl: blobUrl, isMirrorBan: false, isAllDown: false };
+                                        } catch (dashErr) {
+                                            console.warn(`[audioPlayer] DASH stitch failed (${quality}):`, dashErr.message);
+                                            // Treat as a ban so we try the next quality tier
+                                            return { streamUrl: null, isMirrorBan: true, isAllDown: false };
+                                        }
+                                    }
+
+                                    // ── Direct stream URL ─────────────────────────────────
                                     return { streamUrl: data.streamUrl || null, isMirrorBan: false, isAllDown: false };
                                 }
+
                                 const err = await resolveRes.json().catch(() => ({}));
                                 console.warn(`[audioPlayer] /resolve ${label} (${quality}) failed (${resolveRes.status}):`, err.details || err.error);
                                 // 403 = mirror accounts banned for this quality tier — try lower quality
@@ -163,7 +207,18 @@ class AudioPlayerManager {
                     let lastBanOrDown = false;
 
                     for (const quality of qualityChain) {
-                        const { streamUrl: url, isMirrorBan, isAllDown } = await resolveQuality(quality);
+                        const result = await resolveQuality(quality);
+                        const { streamUrl: url, dashBlobUrl: dBlobUrl, isMirrorBan, isAllDown } = result;
+
+                        // DASH stitch succeeded
+                        if (dBlobUrl) {
+                            dashBlobUrl = dBlobUrl;
+                            if (quality !== 'LOSSLESS') {
+                                console.log(`[audioPlayer] DASH quality degraded to ${quality}`);
+                            }
+                            break;
+                        }
+                        // Direct URL succeeded
                         if (url) {
                             streamUrl = url;
                             if (quality !== 'LOSSLESS') {
@@ -171,11 +226,12 @@ class AudioPlayerManager {
                             }
                             break;
                         }
+
                         lastBanOrDown = isMirrorBan || isAllDown;
                         if (!isMirrorBan) break; // non-ban error — don't try lower quality
                     }
 
-                    if (!streamUrl) {
+                    if (!streamUrl && !dashBlobUrl) {
                         const msg = lastBanOrDown
                             ? 'TIDAL streaming mirrors are temporarily unavailable (accounts blocked). Please try again in a few minutes.'
                             : 'Could not resolve TIDAL stream — backend unreachable.';
@@ -183,14 +239,22 @@ class AudioPlayerManager {
                         return false;
                     }
 
-                    // All TIDAL CDN URLs need the audio-proxy (CORS + token in header)
-                    const isTidalCdn = /\.tidal\.com|tidal\.com\/|audio\.tidal/i.test(streamUrl);
-                    audioUrl = isTidalCdn
-                        ? `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`
-                        : streamUrl;
-
-                    this.currentObjectUrl = null;
-                    console.log('[audioPlayer] TIDAL stream proxied:', audioUrl.substring(0, 80));
+                    // DASH blob takes priority (already proxied & stitched)
+                    if (dashBlobUrl) {
+                        audioUrl = dashBlobUrl;
+                        this.currentObjectUrl = dashBlobUrl; // will be revoked on next load
+                        // TIDAL DASH segments are always audio/mp4 — override format
+                        format = 'mp4';
+                        console.log('[audioPlayer] Using DASH blob URL');
+                    } else {
+                        // All TIDAL CDN URLs need the audio-proxy (CORS)
+                        const isTidalCdn = /\.tidal\.com|tidal\.com\/|audio\.tidal/i.test(streamUrl);
+                        audioUrl = isTidalCdn
+                            ? `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`
+                            : streamUrl;
+                        this.currentObjectUrl = null;
+                        console.log('[audioPlayer] TIDAL stream proxied:', audioUrl.substring(0, 80));
+                    }
                 } catch (tidalErr) {
                     console.error('[audioPlayer] TIDAL stream error:', tidalErr.message);
                     this.onLoadError?.('TIDAL stream failed: ' + tidalErr.message);
