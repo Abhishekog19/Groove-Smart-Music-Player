@@ -23,6 +23,12 @@ export function AudioPlayer() {
   const [previousVolume, setPreviousVolume] = useState(0.8);
   const [showQueuePanel, setShowQueuePanel] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // DASH segment support
+  const [dashStreamUrl, setDashStreamUrl] = useState(null);
+  const [isLoadingDash, setIsLoadingDash] = useState(false);
+  const dashBlobRef = useRef(null);  // Track Blob URL for cleanup
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
   
   const {
     currentSong: currentTrack,
@@ -49,6 +55,85 @@ export function AudioPlayer() {
   };
 
   const { isConverting } = useSonglinkConversion();
+
+  // ── DASH Segment Loader ─────────────────────────────────────────────────────
+  // When the backend returns segmented DASH (type: 'dash'), fetch all segments,
+  // concatenate them into a single Blob, and set as the audio src.
+  // Falls back gracefully — if backend/track isn't DASH, this effect does nothing.
+  useEffect(() => {
+    // Revoke previous Blob URL to free memory
+    if (dashBlobRef.current) {
+      URL.revokeObjectURL(dashBlobRef.current);
+      dashBlobRef.current = null;
+    }
+    setDashStreamUrl(null);
+
+    // Only attempt DASH loading when a track is active and has no direct streamUrl
+    const trackId = currentTrack?.tidalId ?? currentTrack?.id;
+    if (!trackId || currentTrack?.streamUrl || currentTrack?.audioUrl) return;
+
+    let cancelled = false;
+
+    async function loadDashTrack() {
+      try {
+        setIsLoadingDash(true);
+        console.log('[AudioPlayer] Resolving DASH stream for track:', trackId);
+
+        const res = await fetch(
+          `${API_BASE}/api/proxy/track/${trackId}?quality=LOSSLESS`
+        );
+        if (!res.ok || cancelled) return;
+
+        const data = await res.json();
+
+        if (data.type === 'direct' && data.url) {
+          // Direct URL — set as streamUrl via state (audio element will pick it up)
+          console.log('[AudioPlayer] Direct URL resolved:', data.url.substring(0, 60));
+          setDashStreamUrl(data.url);
+          return;
+        }
+
+        if (data.type === 'dash' && Array.isArray(data.segmentUrls) && data.segmentUrls.length > 0) {
+          console.log(`[AudioPlayer] Downloading ${data.segmentUrls.length} DASH segments...`);
+
+          const chunks = [];
+          for (let i = 0; i < data.segmentUrls.length; i++) {
+            if (cancelled) return;
+            try {
+              const segRes = await fetch(data.segmentUrls[i]);
+              if (!segRes.ok) throw new Error(`Segment ${i} returned ${segRes.status}`);
+              chunks.push(await segRes.arrayBuffer());
+            } catch (segErr) {
+              console.warn(`[AudioPlayer] Segment ${i} failed, skipping:`, segErr.message);
+            }
+          }
+
+          if (cancelled || chunks.length === 0) return;
+
+          const blob = new Blob(chunks, { type: data.mimeType || 'audio/mp4' });
+          const blobUrl = URL.createObjectURL(blob);
+          dashBlobRef.current = blobUrl;
+          console.log('[AudioPlayer] DASH blob ready, playing...');
+          setDashStreamUrl(blobUrl);
+        }
+      } catch (err) {
+        if (!cancelled) console.error('[AudioPlayer] DASH load error:', err.message);
+      } finally {
+        if (!cancelled) setIsLoadingDash(false);
+      }
+    }
+
+    loadDashTrack();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTrack?.id, currentTrack?.tidalId]);
+
+  // Cleanup Blob URL on unmount
+  useEffect(() => {
+    return () => {
+      if (dashBlobRef.current) URL.revokeObjectURL(dashBlobRef.current);
+    };
+  }, []);
 
   // Handle audio events
   const handleTimeUpdate = useCallback(() => {
@@ -136,7 +221,7 @@ export function AudioPlayer() {
     );
   }
 
-  const isLoading = isConverting;
+  const isLoading = isConverting || isLoadingDash;
   const displayTrack = currentTrack;
   const formatTime = (seconds) => {
     if (isNaN(seconds)) return '0:00';
@@ -151,7 +236,7 @@ export function AudioPlayer() {
     <>
       <audio
         ref={audioRef}
-        src={currentTrack.streamUrl || currentTrack.audioUrl}
+        src={dashStreamUrl || currentTrack.streamUrl || currentTrack.audioUrl}
         onTimeUpdate={handleTimeUpdate}
         onDurationChange={handleDurationChange}
         onEnded={() => next()}
@@ -342,7 +427,9 @@ export function AudioPlayer() {
             {isLoading && (
               <div className="absolute inset-0 rounded-2xl bg-gray-900/50 flex items-center justify-center">
                 <Loader className="animate-spin text-blue-400" size={24} />
-                <span className="ml-2 text-gray-200">Converting track...</span>
+                <span className="ml-2 text-gray-200">
+                  {isLoadingDash ? 'Buffering audio...' : 'Converting track...'}
+                </span>
               </div>
             )}
           </div>
