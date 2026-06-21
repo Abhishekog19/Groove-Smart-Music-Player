@@ -201,8 +201,9 @@ class AudioPlayerManager {
 
                     // ── Quality tier cascade: LOSSLESS → HIGH → LOW ─────────────
                     // LOSSLESS requires upgraded TIDAL accounts on the proxy mirror.
-                    // When those accounts are banned (403), HIGH (AAC 320kbps) often
-                    // still works because it uses a different access tier.
+                    // When those accounts are banned (403) OR the mirror is down (502),
+                    // try lower quality tiers — HIGH (AAC 320kbps) often works on
+                    // a different access path even when LOSSLESS fails.
                     const qualityChain = ['LOSSLESS', 'HIGH', 'LOW'];
                     let lastBanOrDown = false;
 
@@ -222,13 +223,15 @@ class AudioPlayerManager {
                         if (url) {
                             streamUrl = url;
                             if (quality !== 'LOSSLESS') {
-                                console.log(`[audioPlayer] Quality degraded to ${quality} (LOSSLESS mirrors unavailable)`);
+                                console.log(`[audioPlayer] Quality degraded to ${quality} (higher quality unavailable)`);
                             }
                             break;
                         }
 
                         lastBanOrDown = isMirrorBan || isAllDown;
-                        if (!isMirrorBan) break; // non-ban error — don't try lower quality
+                        // CRITICAL FIX: also retry lower quality on isAllDown (502)
+                        // — a 502 on LOSSLESS doesn't mean HIGH will also 502
+                        if (!isMirrorBan && !isAllDown) break; // hard error (e.g. 404) — don't try lower quality
                     }
 
                     if (!streamUrl && !dashBlobUrl) {

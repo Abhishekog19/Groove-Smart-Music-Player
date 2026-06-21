@@ -1,4 +1,4 @@
-import { Play, Pause, SkipBack, SkipForward, Heart, Volume2, VolumeX, ChevronUp, AlertCircle, X } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Heart, Volume2, VolumeX, ChevronUp, AlertCircle, X, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { usePlayerStore } from '../store/store.js';
 import { audioPlayer } from '../lib/audio/audioPlayer';
@@ -16,10 +16,10 @@ export default function PlayerBar() {
   const navigate = useNavigate();
   const { currentSong, isPlaying, volume, likedSongs, currentTime, duration, togglePlay, toggleLike, nextSong, previousSong, setVolume, setCurrentTime, streamError, clearStreamError } = usePlayerStore();
 
-  // Auto-dismiss stream error after 8 seconds
+  // Auto-dismiss stream error after 15 seconds
   useEffect(() => {
     if (!streamError) return;
-    const t = setTimeout(clearStreamError, 8000);
+    const t = setTimeout(clearStreamError, 15000);
     return () => clearTimeout(t);
   }, [streamError, clearStreamError]);
 
@@ -58,6 +58,14 @@ export default function PlayerBar() {
         }}>
           <AlertCircle size={15} style={{ flexShrink: 0, opacity: 0.9 }} />
           <span style={{ flex: 1 }}>{streamError}</span>
+          {/* Retry button: clears error and re-attempts play */}
+          <button
+            onClick={() => { clearStreamError(); setTimeout(() => togglePlay(), 100); }}
+            style={{ background: 'rgba(255,255,255,0.18)', border: 'none', color: '#fff', cursor: 'pointer', padding: '3px 8px', borderRadius: 4, display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.72rem', fontWeight: 600, flexShrink: 0 }}
+            title="Retry playback"
+          >
+            <RefreshCw size={11} /> Retry
+          </button>
           <button
             onClick={clearStreamError}
             style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', padding: '2px', opacity: 0.8, display: 'flex', alignItems: 'center' }}
