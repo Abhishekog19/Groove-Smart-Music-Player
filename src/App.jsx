@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Layout from './components/Layout';
 import Library from './pages/Library';
 import Player from './pages/Player';
@@ -16,10 +16,18 @@ import { checkFolderPermission } from './lib/db/indexedDB';
 import FolderSetupScreen from './components/setup/FolderSetupScreen';
 import AppLoadingScreen from './components/setup/AppLoadingScreen';
 import { loadSession } from './lib/session/sessionPersistence';
+import AmazonTurnstile from './components/AmazonTurnstile';
 
 function App() {
     // Initialize audio player (must always run, even during loading/setup)
     useAudioPlayer();
+
+    const [amazonReady, setAmazonReady] = useState(false);
+    const handleAmazonReady = useCallback(() => setAmazonReady(true), []);
+    const handleAmazonError = useCallback((msg) => {
+        // Non-fatal: Amazon unavailable, will fall back to Qobuz/Deezer
+        console.warn('[App] Amazon Music unavailable:', msg);
+    }, []);
 
     const fetchSongs               = useLibraryStore((s) => s.fetchSongs);
     const fetchPlaylists           = useLibraryStore((s) => s.fetchPlaylists);
@@ -100,9 +108,11 @@ function App() {
         );
     }
 
-    // ── Normal app ─────────────────────────────────────────────────────────
+    // ── Normal app ──────────────────────────────────────────────────────
     return (
         <BrowserRouter>
+            {/* Amazon Music Turnstile — runs silently in background, no UI unless challenge needed */}
+            <AmazonTurnstile onReady={handleAmazonReady} onError={handleAmazonError} />
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
