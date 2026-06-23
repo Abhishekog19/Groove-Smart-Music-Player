@@ -181,31 +181,34 @@ class AudioPlayerManager {
                                     }
 
                                     // ── Direct stream URL ─────────────────────────────────
-                                    return { streamUrl: data.streamUrl || null, isMirrorBan: false, isAllDown: false };
+                                    const resolvedStreamUrl = data.streamUrl || null;
+                                    const resolvedProvider  = data.provider  || 'tidal';
+                                    const resolvedKey       = data.decryptionKey || null;
+                                    return {
+                                      streamUrl:     resolvedStreamUrl,
+                                      provider:      resolvedProvider,
+                                      decryptionKey: resolvedKey,
+                                      isMirrorBan:   false,
+                                      isAllDown:     false,
+                                    };
                                 }
 
                                 const err = await resolveRes.json().catch(() => ({}));
                                 console.warn(`[audioPlayer] /resolve ${label} (${quality}) failed (${resolveRes.status}):`, err.details || err.error);
-                                // 403 = mirror accounts banned for this quality tier — try lower quality
                                 if (resolveRes.status === 403) return { streamUrl: null, isMirrorBan: true, isAllDown: false };
-                                // Other 4xx = hard error (track not found etc.) — stop
                                 if (resolveRes.status < 500) return { streamUrl: null, isMirrorBan: false, isAllDown: false };
-                                // 5xx (502/503) — retry with next pass
                             } catch (passErr) {
                                 console.warn(`[audioPlayer] /resolve ${label} (${quality}) error:`, passErr.message);
-                                // If last pass, give up
                             }
                         }
                         return { streamUrl: null, isMirrorBan: false, isAllDown: true };
                     };
 
                     // ── Quality tier cascade: LOSSLESS → HIGH → LOW ─────────────
-                    // LOSSLESS requires upgraded TIDAL accounts on the proxy mirror.
-                    // When those accounts are banned (403) OR the mirror is down (502),
-                    // try lower quality tiers — HIGH (AAC 320kbps) often works on
-                    // a different access path even when LOSSLESS fails.
                     const qualityChain = ['LOSSLESS', 'HIGH', 'LOW'];
                     let lastBanOrDown = false;
+                    let resolvedProvider = 'tidal';
+                    let resolvedDecryptionKey = null;
 
                     for (const quality of qualityChain) {
                         const result = await resolveQuality(quality);
@@ -214,49 +217,89 @@ class AudioPlayerManager {
                         // DASH stitch succeeded
                         if (dBlobUrl) {
                             dashBlobUrl = dBlobUrl;
-                            if (quality !== 'LOSSLESS') {
-                                console.log(`[audioPlayer] DASH quality degraded to ${quality}`);
-                            }
+                            if (quality !== 'LOSSLESS') console.log(`[audioPlayer] DASH quality degraded to ${quality}`);
                             break;
                         }
                         // Direct URL succeeded
                         if (url) {
                             streamUrl = url;
-                            if (quality !== 'LOSSLESS') {
-                                console.log(`[audioPlayer] Quality degraded to ${quality} (higher quality unavailable)`);
-                            }
+                            resolvedProvider     = result.provider      || 'tidal';
+                            resolvedDecryptionKey = result.decryptionKey || null;
+                            if (quality !== 'LOSSLESS') console.log(`[audioPlayer] Quality degraded to ${quality}`);
                             break;
                         }
 
                         lastBanOrDown = isMirrorBan || isAllDown;
-                        // CRITICAL FIX: also retry lower quality on isAllDown (502)
-                        // — a 502 on LOSSLESS doesn't mean HIGH will also 502
-                        if (!isMirrorBan && !isAllDown) break; // hard error (e.g. 404) — don't try lower quality
+                        if (!isMirrorBan && !isAllDown) break;
                     }
 
                     if (!streamUrl && !dashBlobUrl) {
                         const msg = lastBanOrDown
-                            ? 'TIDAL streaming mirrors are temporarily unavailable (accounts blocked). Please try again in a few minutes.'
-                            : 'Could not resolve TIDAL stream — backend unreachable.';
+                            ? 'TIDAL streaming mirrors are temporarily unavailable. Please try again in a few minutes.'
+                            : 'Could not resolve stream — backend unreachable.';
                         this.onLoadError?.(msg);
                         return false;
                     }
 
-                    // DASH blob takes priority (already proxied & stitched)
+                    // ── DASH blob: already proxied & stitched ────────────────────
                     if (dashBlobUrl) {
                         audioUrl = dashBlobUrl;
-                        this.currentObjectUrl = dashBlobUrl; // will be revoked on next load
-                        // TIDAL DASH segments are always audio/mp4 — override format
+                        this.currentObjectUrl = dashBlobUrl;
                         format = 'mp4';
                         console.log('[audioPlayer] Using DASH blob URL');
+
+                    // ── Amazon Music: CENC-encrypted MP4 ─────────────────────────
+                    // Amazon streams are encrypted. If a decryptionKey is provided,
+                    // fetch the raw bytes via audio-proxy, decrypt with AES-128,
+                    // and create an in-memory blob URL for Howler.
+                    // If no key (unencrypted Amazon track), play the direct URL.
+                    } else if (resolvedProvider === 'amazon' && resolvedDecryptionKey) {
+                        try {
+                            console.log('[audioPlayer] Amazon CENC — decrypting stream...');
+                            const proxyUrl = `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`;
+                            const rawRes   = await fetch(proxyUrl, { signal: AbortSignal.timeout(60_000) });
+                            if (!rawRes.ok) throw new Error(`Amazon fetch failed: ${rawRes.status}`);
+
+                            const encryptedBuffer = await rawRes.arrayBuffer();
+
+                            // Decode hex key → 16-byte Uint8Array for AES-128
+                            const keyHex   = resolvedDecryptionKey.replace(/[^0-9a-f]/gi, '');
+                            const keyBytes = new Uint8Array(keyHex.match(/.{2}/g).map(b => parseInt(b, 16)));
+
+                            const cryptoKey = await crypto.subtle.importKey(
+                                'raw', keyBytes, { name: 'AES-CTR' }, false, ['decrypt']
+                            );
+
+                            // Amazon uses AES-CTR with zero IV for CENC
+                            const decrypted = await crypto.subtle.decrypt(
+                                { name: 'AES-CTR', counter: new Uint8Array(16), length: 64 },
+                                cryptoKey,
+                                encryptedBuffer
+                            );
+
+                            const blob    = new Blob([decrypted], { type: 'audio/mp4' });
+                            const blobUrl = URL.createObjectURL(blob);
+                            this.currentObjectUrl = blobUrl;
+                            audioUrl = blobUrl;
+                            format   = 'mp4';
+                            console.log(`[audioPlayer] ✅ Amazon decrypted: ${decrypted.byteLength} bytes`);
+                        } catch (cencErr) {
+                            console.warn('[audioPlayer] Amazon CENC decrypt failed, trying direct play:', cencErr.message);
+                            // Fallback: try direct URL (may work for some tracks or if key is wrong)
+                            audioUrl = `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`;
+                            format   = 'mp4';
+                        }
+
+                    // ── All other providers: proxy TIDAL CDN, direct otherwise ───
                     } else {
-                        // All TIDAL CDN URLs need the audio-proxy (CORS)
                         const isTidalCdn = /\.tidal\.com|tidal\.com\/|audio\.tidal/i.test(streamUrl);
-                        audioUrl = isTidalCdn
+                        const isAmazonCdn = /amazon\.com|amazon-audio|music\.amazon/i.test(streamUrl);
+                        // Amazon unencrypted + all other CDN URLs go through proxy for CORS
+                        audioUrl = (isTidalCdn || isAmazonCdn)
                             ? `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`
                             : streamUrl;
                         this.currentObjectUrl = null;
-                        console.log('[audioPlayer] TIDAL stream proxied:', audioUrl.substring(0, 80));
+                        console.log(`[audioPlayer] ${resolvedProvider} stream:`, audioUrl.substring(0, 80));
                     }
                 } catch (tidalErr) {
                     console.error('[audioPlayer] TIDAL stream error:', tidalErr.message);

@@ -18,23 +18,25 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 
 // ── Site Key Selection ────────────────────────────────────────────────────────
-// Cloudflare Turnstile site keys are domain-bound.
-// In development (localhost), we use Cloudflare's official test key which:
-//   - Always passes without user interaction
-//   - Works on any domain (including localhost)
-//   - BUT generates a test token that amz.geeked.wtf rejects (expected in dev)
-//   - Amazon Music falls back to Qobuz silently in that case — this is fine
+// Dev (localhost):
+//   → Cloudflare test key — always passes, works on any domain, no errors
 //
-// In production (deployed domain):
-//   - Use Monochrome's Amazon key: 0x4AAAAAADgxqF6QVMm0GLHH
-//   - This is what amz.geeked.wtf validates against
-//   - Add your deployed domain to the Cloudflare Turnstile site settings
+// Production (groove-smart-music-player.vercel.app or any real domain):
+//   → Your OWN Cloudflare Turnstile site key (VITE_CF_TURNSTILE_SITE_KEY)
+//   → The widget runs cleanly on your registered domain
+//   → Token sent to amz.geeked.wtf which validates it against ITS secret
+//     (fails gracefully if keys don't match — Qobuz takes over as fallback)
+//
+// To make Amazon Music fully work in production, you need to self-host
+// an Amazon Music proxy configured with YOUR Turnstile keys (Phase 3).
 //
 const IS_DEV = import.meta.env.DEV;
 
-const AMAZON_TURNSTILE_SITE_KEY = IS_DEV
-  ? '1x00000000000000000000AA'  // Cloudflare always-pass test key (localhost safe)
-  : (import.meta.env.VITE_AMAZON_TURNSTILE_SITE_KEY || '0x4AAAAAADgxqF6QVMm0GLHH');
+// Monochrome's registered Turnstile site key — this is what amz.geeked.wtf validates tokens against.
+// Using the test key (1x00000000000000000000AA) generates tokens that amz.geeked.wtf REJECTS (403).
+// This key is PUBLIC (safe to use in frontend — Cloudflare site keys are not secret).
+// Source: Monochrome frontend source code (0x4AAAAAADgxqF6QVMm0GLHH)
+const AMAZON_TURNSTILE_SITE_KEY = '0x4AAAAAADgxqF6QVMm0GLHH';
 
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 const EXCHANGE_ENDPOINT    = '/api/amazon/exchange-turnstile';
