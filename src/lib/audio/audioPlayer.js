@@ -5,6 +5,7 @@ import { extractStreamUrl as parseManifestUrl } from '../tidal/manifestParser.js
 // Static import — dynamic import('../tidal/index.js') breaks Vite production builds
 // because chunks get renamed (e.g. index-CuyoZGbS.js) and the path no longer resolves.
 import { tidalAPI } from '../tidal/index.js';
+import { getStoredJwt } from '../../components/AmazonTurnstile.jsx';
 
 // Increase the HTML5 audio pool size (default is 10) so rapid song changes
 // don't exhaust the pool and return locked audio elements that ignore seeks.
@@ -110,197 +111,228 @@ class AudioPlayerManager {
                 try {
                     let streamUrl = null;
                     let dashBlobUrl = null;
+                    let resolvedProvider = 'tidal';
 
-                    /**
-                     * resolveQuality — calls /api/tidal-download/resolve for a given quality tier.
-                     *
-                     * Returns one of:
-                     *   { streamUrl: '<url>', isMirrorBan: false, isAllDown: false }   — direct stream
-                     *   { dashBlobUrl: '<blob:...>', isMirrorBan: false, isAllDown: false } — DASH stitched
-                     *   { streamUrl: null, isMirrorBan: true/false, isAllDown: true/false } — failure
-                     *
-                     * Two-pass cold-start strategy:
-                     *   Pass 1 (20s timeout)  — works when Render/Railway backend is warm
-                     *   Pass 2 (65s timeout)  — waits out Render free-tier cold start
-                     */
-                    const resolveQuality = async (quality) => {
-                        const q = new URLSearchParams({
-                            title:   song.title   || '',
-                            artist:  song.artist?.name || song.artist || '',
-                            quality,
-                        });
-                        if (song.tidalId) q.set('tidalId', song.tidalId);
+                    // ────────────────────────────────────────────────────────────
+                    // Stage A: Amazon Music — DISABLED (amz.geeked.wtf requires
+                    // Monochrome's own Turnstile site key; tokens from other keys
+                    // return a restricted JWT that 401s on /api/track requests).
+                    // Re-enable if a bypass_token or own Amazon proxy is available.
+                    // ────────────────────────────────────────────────────────────
+                    /* AMAZON_BLOCK_START
+                    try {
+                        const title = song.title || '';
+                        const artist = song.artist?.name || song.artist || '';
+                        const dur = song.durationMs ? Math.round(song.durationMs / 1000) : 0;
 
-                        const passes = [
-                            { timeout: 20_000, label: 'warm' },
-                            { timeout: 65_000, label: 'cold-start' },
-                        ];
+                        // Step A1: Get JWT from backend (it was cached there after Turnstile)
+                        const jwtRes = await fetch('/api/amazon/jwt', { cache: 'no-store', signal: AbortSignal.timeout(3_000) });
+                        if (jwtRes.ok) {
+                            const { jwt, apiBase } = await jwtRes.json();
+                            const AMZ_BASE = (apiBase || 'https://amz.geeked.wtf').replace(/\/+$/, '');
 
-                        for (const { timeout, label } of passes) {
-                            try {
-                                const resolveRes = await fetch(
-                                    `/api/tidal-download/resolve?${q.toString()}`,
-                                    { cache: 'no-store', signal: AbortSignal.timeout(timeout) }
-                                );
+                            // Step A2: Get ASIN from backend (t2a.geeked.wtf works from server)
+                            const asinParams = new URLSearchParams({ title, artist, duration: dur });
+                            const asinRes = await fetch(`/api/amazon/asin?${asinParams}`, {
+                                cache: 'no-store',
+                                signal: AbortSignal.timeout(12_000),
+                            });
 
-                                if (resolveRes.ok) {
-                                    const data = await resolveRes.json();
+                            if (asinRes.ok) {
+                                const { asin } = await asinRes.json();
+                                console.log(`[audioPlayer] Amazon ASIN: ${asin} for "${title}"`);
 
-                                    // ── DASH segment response ──────────────────────────────
-                                    // Backend returns { format: 'dash', segmentUrls: [...] }
-                                    // We must fetch all segments via /api/audio-proxy (CORS),
-                                    // concatenate into a single Blob, and return an object URL.
-                                    if (data.format === 'dash' && Array.isArray(data.segmentUrls) && data.segmentUrls.length > 0) {
-                                        console.log(`[audioPlayer] DASH detected (${quality}) — ${data.segmentUrls.length} segments. Stitching...`);
-                                        try {
-                                            const buffers = await Promise.all(
-                                                data.segmentUrls.map(async (segUrl) => {
-                                                    const proxyUrl = `/api/audio-proxy?url=${encodeURIComponent(segUrl)}`;
-                                                    const r = await fetch(proxyUrl, { signal: AbortSignal.timeout(30_000) });
-                                                    if (!r.ok) throw new Error(`Segment fetch failed: ${r.status} for ${segUrl.substring(0, 60)}`);
-                                                    return r.arrayBuffer();
-                                                })
-                                            );
-                                            const totalBytes = buffers.reduce((s, b) => s + b.byteLength, 0);
-                                            const combined = new Uint8Array(totalBytes);
-                                            let offset = 0;
-                                            for (const buf of buffers) {
-                                                combined.set(new Uint8Array(buf), offset);
-                                                offset += buf.byteLength;
-                                            }
-                                            const mimeType = data.mimeType || 'audio/mp4';
-                                            const blob = new Blob([combined], { type: mimeType });
-                                            const blobUrl = URL.createObjectURL(blob);
-                                            console.log(`[audioPlayer] DASH stitched: ${totalBytes} bytes → blob URL`);
-                                            return { dashBlobUrl: blobUrl, isMirrorBan: false, isAllDown: false };
-                                        } catch (dashErr) {
-                                            console.warn(`[audioPlayer] DASH stitch failed (${quality}):`, dashErr.message);
-                                            // Treat as a ban so we try the next quality tier
-                                            return { streamUrl: null, isMirrorBan: true, isAllDown: false };
+                                // Step A3: Fetch stream URL DIRECTLY from amz.geeked.wtf (browser → Cloudflare OK)
+                                // Try quality cascade: HD → SD_HIGH
+                                const qualities = ['HD', 'SD_HIGH'];
+                                for (const q of qualities) {
+                                    try {
+                                        const trackRes = await fetch(`${AMZ_BASE}/api/track/${asin}?quality=${q}`, {
+                                            headers: {
+                                                'X-Turnstile-JWT': jwt,
+                                                'Accept': 'application/json',
+                                            },
+                                            signal: AbortSignal.timeout(15_000),
+                                        });
+
+                                        if (trackRes.status === 403) {
+                                            fetch('/api/amazon/report-rate-limit', { method: 'POST' }).catch(() => { });
+                                            break;
                                         }
+                                        if (trackRes.status === 401 || trackRes.status === 428) {
+                                            fetch('/api/amazon/clear-jwt', { method: 'POST' }).catch(() => { });
+                                            break;
+                                        }
+                                        if (!trackRes.ok) {
+                                            console.warn(`[audioPlayer] Amazon API ${trackRes.status} for ${q}`);
+                                            continue;
+                                        }
+
+                                        const trackData = await trackRes.json();
+                                        if (!trackData?.stream_url) {
+                                            console.warn(`[audioPlayer] Amazon: no stream_url in response for ${q}`, Object.keys(trackData || {}));
+                                            continue;
+                                        }
+
+                                        const decryptionKey = trackData.decryption_key || null;
+                                        console.log(`[audioPlayer] ✅ Amazon stream: ${trackData.quality_selected || q} encrypted=${!!decryptionKey}`);
+
+                                        if (decryptionKey) {
+                                            console.log('[audioPlayer] Amazon CENC — fetching & decrypting...');
+                                            const rawRes = await fetch(trackData.stream_url, { signal: AbortSignal.timeout(60_000) });
+                                            if (!rawRes.ok) throw new Error(`CDN fetch ${rawRes.status}`);
+                                            const encBuf = await rawRes.arrayBuffer();
+                                            const keyHex = decryptionKey.replace(/[^0-9a-f]/gi, '');
+                                            const keyBytes = new Uint8Array(keyHex.match(/.{2}/g).map(b => parseInt(b, 16)));
+                                            const cryptoKey = await crypto.subtle.importKey('raw', keyBytes, { name: 'AES-CTR' }, false, ['decrypt']);
+                                            const decrypted = await crypto.subtle.decrypt({ name: 'AES-CTR', counter: new Uint8Array(16), length: 64 }, cryptoKey, encBuf);
+                                            const blob = new Blob([decrypted], { type: 'audio/mp4' });
+                                            const blobUrl = URL.createObjectURL(blob);
+                                            this.currentObjectUrl = blobUrl;
+                                            audioUrl = blobUrl;
+                                            format = 'mp4';
+                                            console.log(`[audioPlayer] ✅ Amazon decrypted: ${decrypted.byteLength} bytes`);
+                                        } else {
+                                            audioUrl = trackData.stream_url;
+                                            format = 'mp4';
+                                            console.log('[audioPlayer] ✅ Amazon stream (unencrypted)');
+                                        }
+                                        resolvedProvider = 'amazon';
+                                        break;
+                                    } catch (qualErr) {
+                                        console.warn(`[audioPlayer] Amazon ${q} failed:`, qualErr.message);
                                     }
-
-                                    // ── Direct stream URL ─────────────────────────────────
-                                    const resolvedStreamUrl = data.streamUrl || null;
-                                    const resolvedProvider  = data.provider  || 'tidal';
-                                    const resolvedKey       = data.decryptionKey || null;
-                                    return {
-                                      streamUrl:     resolvedStreamUrl,
-                                      provider:      resolvedProvider,
-                                      decryptionKey: resolvedKey,
-                                      isMirrorBan:   false,
-                                      isAllDown:     false,
-                                    };
                                 }
-
-                                const err = await resolveRes.json().catch(() => ({}));
-                                console.warn(`[audioPlayer] /resolve ${label} (${quality}) failed (${resolveRes.status}):`, err.details || err.error);
-                                if (resolveRes.status === 403) return { streamUrl: null, isMirrorBan: true, isAllDown: false };
-                                if (resolveRes.status < 500) return { streamUrl: null, isMirrorBan: false, isAllDown: false };
-                            } catch (passErr) {
-                                console.warn(`[audioPlayer] /resolve ${label} (${quality}) error:`, passErr.message);
+                            } else if (asinRes.status !== 404) {
+                                console.warn(`[audioPlayer] ASIN lookup failed: ${asinRes.status}`);
                             }
                         }
-                        return { streamUrl: null, isMirrorBan: false, isAllDown: true };
-                    };
+                    } catch (amazonErr) {
+                        console.warn('[audioPlayer] Amazon Music stage failed:', amazonErr.message);
+                    }
+                    AMAZON_BLOCK_END */
 
-                    // ── Quality tier cascade: LOSSLESS → HIGH → LOW ─────────────
-                    const qualityChain = ['LOSSLESS', 'HIGH', 'LOW'];
-                    let lastBanOrDown = false;
-                    let resolvedProvider = 'tidal';
-                    let resolvedDecryptionKey = null;
+                    // ────────────────────────────────────────────────────────────
+                    // Stage B: TIDAL backend resolve (Qobuz → Deezer → Mirrors → Relay)
+                    // Only runs if Amazon didn't produce a URL above.
+                    // ────────────────────────────────────────────────────────────
+                    if (!audioUrl) {
+                        const resolveQuality = async (quality) => {
+                            const q = new URLSearchParams({
+                                title: song.title || '',
+                                artist: song.artist?.name || song.artist || '',
+                                quality,
+                            });
+                            if (song.tidalId) q.set('tidalId', song.tidalId);
 
-                    for (const quality of qualityChain) {
-                        const result = await resolveQuality(quality);
-                        const { streamUrl: url, dashBlobUrl: dBlobUrl, isMirrorBan, isAllDown } = result;
+                            const passes = [
+                                { timeout: 20_000, label: 'warm' },
+                                { timeout: 65_000, label: 'cold-start' },
+                            ];
 
-                        // DASH stitch succeeded
-                        if (dBlobUrl) {
-                            dashBlobUrl = dBlobUrl;
-                            if (quality !== 'LOSSLESS') console.log(`[audioPlayer] DASH quality degraded to ${quality}`);
-                            break;
+                            for (const { timeout, label } of passes) {
+                                try {
+                                    const resolveRes = await fetch(
+                                        `/api/tidal-download/resolve?${q.toString()}`,
+                                        { cache: 'no-store', signal: AbortSignal.timeout(timeout) }
+                                    );
+
+                                    if (resolveRes.ok) {
+                                        const data = await resolveRes.json();
+
+                                        // DASH segment response
+                                        if (data.format === 'dash' && Array.isArray(data.segmentUrls) && data.segmentUrls.length > 0) {
+                                            console.log(`[audioPlayer] DASH detected (${quality}) — ${data.segmentUrls.length} segments. Stitching...`);
+                                            try {
+                                                const buffers = await Promise.all(
+                                                    data.segmentUrls.map(async (segUrl) => {
+                                                        const proxyUrl = `/api/audio-proxy?url=${encodeURIComponent(segUrl)}`;
+                                                        const r = await fetch(proxyUrl, { signal: AbortSignal.timeout(30_000) });
+                                                        if (!r.ok) throw new Error(`Segment fetch failed: ${r.status}`);
+                                                        return r.arrayBuffer();
+                                                    })
+                                                );
+                                                const totalBytes = buffers.reduce((s, b) => s + b.byteLength, 0);
+                                                const combined = new Uint8Array(totalBytes);
+                                                let offset = 0;
+                                                for (const buf of buffers) { combined.set(new Uint8Array(buf), offset); offset += buf.byteLength; }
+                                                const blob = new Blob([combined], { type: data.mimeType || 'audio/mp4' });
+                                                const blobUrl = URL.createObjectURL(blob);
+                                                console.log(`[audioPlayer] DASH stitched: ${totalBytes} bytes`);
+                                                return { dashBlobUrl: blobUrl, isMirrorBan: false, isAllDown: false };
+                                            } catch (dashErr) {
+                                                console.warn(`[audioPlayer] DASH stitch failed (${quality}):`, dashErr.message);
+                                                return { streamUrl: null, isMirrorBan: true, isAllDown: false };
+                                            }
+                                        }
+
+                                        // Direct stream URL
+                                        return {
+                                            streamUrl: data.streamUrl || null,
+                                            provider: data.provider || 'tidal',
+                                            isMirrorBan: false,
+                                            isAllDown: false,
+                                        };
+                                    }
+
+                                    const err = await resolveRes.json().catch(() => ({}));
+                                    console.warn(`[audioPlayer] /resolve ${label} (${quality}) HTTP ${resolveRes.status}:`, err.error);
+                                    if (resolveRes.status === 403) return { streamUrl: null, isMirrorBan: true, isAllDown: false };
+                                    if (resolveRes.status < 500) return { streamUrl: null, isMirrorBan: false, isAllDown: false };
+                                } catch (passErr) {
+                                    console.warn(`[audioPlayer] /resolve ${label} (${quality}) error:`, passErr.message);
+                                }
+                            }
+                            return { streamUrl: null, isMirrorBan: false, isAllDown: true };
+                        };
+
+                        const qualityChain = ['LOSSLESS', 'HIGH', 'LOW'];
+                        let lastBanOrDown = false;
+
+                        for (const quality of qualityChain) {
+                            const result = await resolveQuality(quality);
+                            const { dashBlobUrl: dBlobUrl, isMirrorBan, isAllDown } = result;
+
+                            if (dBlobUrl) {
+                                dashBlobUrl = dBlobUrl;
+                                if (quality !== 'LOSSLESS') console.log(`[audioPlayer] DASH quality degraded to ${quality}`);
+                                break;
+                            }
+                            if (result.streamUrl) {
+                                streamUrl = result.streamUrl;
+                                resolvedProvider = result.provider || 'tidal';
+                                if (quality !== 'LOSSLESS') console.log(`[audioPlayer] Quality degraded to ${quality}`);
+                                break;
+                            }
+
+                            lastBanOrDown = isMirrorBan || isAllDown;
+                            if (!isMirrorBan && !isAllDown) break;
                         }
-                        // Direct URL succeeded
-                        if (url) {
-                            streamUrl = url;
-                            resolvedProvider     = result.provider      || 'tidal';
-                            resolvedDecryptionKey = result.decryptionKey || null;
-                            if (quality !== 'LOSSLESS') console.log(`[audioPlayer] Quality degraded to ${quality}`);
-                            break;
+
+                        if (!streamUrl && !dashBlobUrl) {
+                            const msg = lastBanOrDown
+                                ? 'TIDAL streaming mirrors are temporarily unavailable. Please try again in a few minutes.'
+                                : 'Could not resolve stream — backend unreachable.';
+                            this.onLoadError?.(msg);
+                            return false;
                         }
 
-                        lastBanOrDown = isMirrorBan || isAllDown;
-                        if (!isMirrorBan && !isAllDown) break;
+                        // DASH blob
+                        if (dashBlobUrl) {
+                            audioUrl = dashBlobUrl;
+                            this.currentObjectUrl = dashBlobUrl;
+                            format = 'mp4';
+                            console.log('[audioPlayer] Using DASH blob URL');
+                        } else {
+                            const isTidalCdn = /\.tidal\.com|tidal\.com\/|audio\.tidal/i.test(streamUrl);
+                            audioUrl = isTidalCdn
+                                ? `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`
+                                : streamUrl;
+                            this.currentObjectUrl = null;
+                            console.log(`[audioPlayer] ${resolvedProvider} stream:`, audioUrl.substring(0, 80));
+                        }
                     }
 
-                    if (!streamUrl && !dashBlobUrl) {
-                        const msg = lastBanOrDown
-                            ? 'TIDAL streaming mirrors are temporarily unavailable. Please try again in a few minutes.'
-                            : 'Could not resolve stream — backend unreachable.';
-                        this.onLoadError?.(msg);
-                        return false;
-                    }
-
-                    // ── DASH blob: already proxied & stitched ────────────────────
-                    if (dashBlobUrl) {
-                        audioUrl = dashBlobUrl;
-                        this.currentObjectUrl = dashBlobUrl;
-                        format = 'mp4';
-                        console.log('[audioPlayer] Using DASH blob URL');
-
-                    // ── Amazon Music: CENC-encrypted MP4 ─────────────────────────
-                    // Amazon streams are encrypted. If a decryptionKey is provided,
-                    // fetch the raw bytes via audio-proxy, decrypt with AES-128,
-                    // and create an in-memory blob URL for Howler.
-                    // If no key (unencrypted Amazon track), play the direct URL.
-                    } else if (resolvedProvider === 'amazon' && resolvedDecryptionKey) {
-                        try {
-                            console.log('[audioPlayer] Amazon CENC — decrypting stream...');
-                            const proxyUrl = `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`;
-                            const rawRes   = await fetch(proxyUrl, { signal: AbortSignal.timeout(60_000) });
-                            if (!rawRes.ok) throw new Error(`Amazon fetch failed: ${rawRes.status}`);
-
-                            const encryptedBuffer = await rawRes.arrayBuffer();
-
-                            // Decode hex key → 16-byte Uint8Array for AES-128
-                            const keyHex   = resolvedDecryptionKey.replace(/[^0-9a-f]/gi, '');
-                            const keyBytes = new Uint8Array(keyHex.match(/.{2}/g).map(b => parseInt(b, 16)));
-
-                            const cryptoKey = await crypto.subtle.importKey(
-                                'raw', keyBytes, { name: 'AES-CTR' }, false, ['decrypt']
-                            );
-
-                            // Amazon uses AES-CTR with zero IV for CENC
-                            const decrypted = await crypto.subtle.decrypt(
-                                { name: 'AES-CTR', counter: new Uint8Array(16), length: 64 },
-                                cryptoKey,
-                                encryptedBuffer
-                            );
-
-                            const blob    = new Blob([decrypted], { type: 'audio/mp4' });
-                            const blobUrl = URL.createObjectURL(blob);
-                            this.currentObjectUrl = blobUrl;
-                            audioUrl = blobUrl;
-                            format   = 'mp4';
-                            console.log(`[audioPlayer] ✅ Amazon decrypted: ${decrypted.byteLength} bytes`);
-                        } catch (cencErr) {
-                            console.warn('[audioPlayer] Amazon CENC decrypt failed, trying direct play:', cencErr.message);
-                            // Fallback: try direct URL (may work for some tracks or if key is wrong)
-                            audioUrl = `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`;
-                            format   = 'mp4';
-                        }
-
-                    // ── All other providers: proxy TIDAL CDN, direct otherwise ───
-                    } else {
-                        const isTidalCdn = /\.tidal\.com|tidal\.com\/|audio\.tidal/i.test(streamUrl);
-                        const isAmazonCdn = /amazon\.com|amazon-audio|music\.amazon/i.test(streamUrl);
-                        // Amazon unencrypted + all other CDN URLs go through proxy for CORS
-                        audioUrl = (isTidalCdn || isAmazonCdn)
-                            ? `/api/audio-proxy?url=${encodeURIComponent(streamUrl)}`
-                            : streamUrl;
-                        this.currentObjectUrl = null;
-                        console.log(`[audioPlayer] ${resolvedProvider} stream:`, audioUrl.substring(0, 80));
-                    }
                 } catch (tidalErr) {
                     console.error('[audioPlayer] TIDAL stream error:', tidalErr.message);
                     this.onLoadError?.('TIDAL stream failed: ' + tidalErr.message);

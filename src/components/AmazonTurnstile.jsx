@@ -39,10 +39,42 @@ const IS_DEV = import.meta.env.DEV;
 const AMAZON_TURNSTILE_SITE_KEY = '0x4AAAAAADgxqF6QVMm0GLHH';
 
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
-const EXCHANGE_ENDPOINT    = '/api/amazon/exchange-turnstile';
+// Direct browser → amz.geeked.wtf (matches Monochrome exactly)
+// The JWT exchange MUST happen from the browser — amz.geeked.wtf ties JWTs to the
+// requesting IP. Server-side exchange → browser track request = 401 (IP mismatch).
+const AMZ_API_BASE      = 'https://amz.geeked.wtf';
+const EXCHANGE_ENDPOINT = `${AMZ_API_BASE}/api/auth/turnstile`;
 
 // How long after success to re-trigger (JWT TTL minus buffer)
-const REFRESH_INTERVAL_MS = 4 * 60 * 1000; // 4 minutes
+const REFRESH_INTERVAL_MS = 55 * 60 * 1000; // 55 minutes (JWT lasts ~1hr)
+
+// ── Browser-side JWT cache (sessionStorage) ───────────────────────────────────
+// Stored in sessionStorage so it survives hot-reloads but not browser restarts.
+const JWT_STORAGE_KEY = 'amz_turnstile_jwt';
+const JWT_EXPIRY_KEY  = 'amz_turnstile_expiry';
+
+export function getStoredJwt() {
+  try {
+    const jwt    = sessionStorage.getItem(JWT_STORAGE_KEY);
+    const expiry = Number(sessionStorage.getItem(JWT_EXPIRY_KEY) || 0);
+    if (jwt && Date.now() < expiry) return jwt;
+  } catch { /* sessionStorage unavailable */ }
+  return null;
+}
+
+function storeJwt(jwt, expiresIn = 3600) {
+  try {
+    sessionStorage.setItem(JWT_STORAGE_KEY, jwt);
+    sessionStorage.setItem(JWT_EXPIRY_KEY, String(Date.now() + (expiresIn - 60) * 1000));
+  } catch { /* ignore */ }
+}
+
+function clearStoredJwt() {
+  try {
+    sessionStorage.removeItem(JWT_STORAGE_KEY);
+    sessionStorage.removeItem(JWT_EXPIRY_KEY);
+  } catch { /* ignore */ }
+}
 
 export default function AmazonTurnstile({ onReady, onError }) {
   const containerRef  = useRef(null);
@@ -65,7 +97,8 @@ export default function AmazonTurnstile({ onReady, onError }) {
       script.id    = 'cf-turnstile-script';
       script.src   = `${TURNSTILE_SCRIPT_URL}?render=explicit`;
       script.async = true;
-      script.defer = true;
+      // NOTE: do NOT use defer — it causes "preloaded but not used" browser warning
+      // because Cloudflare's script adds a preload hint that fires before defer resolves
       script.onload  = () => resolve(window.turnstile);
       script.onerror = () => reject(new Error('Failed to load Turnstile script'));
       document.head.appendChild(script);
@@ -75,28 +108,34 @@ export default function AmazonTurnstile({ onReady, onError }) {
   // ── Exchange token with backend ──────────────────────────────────────────
   const exchangeToken = useCallback(async (token) => {
     try {
+      // ── Call amz.geeked.wtf DIRECTLY from the browser (Monochrome pattern) ──
+      // JWT is IP-bound to the requester. Browser must exchange AND use the JWT
+      // from the same IP — server-side exchange causes 401 on track requests.
       const res = await fetch(EXCHANGE_ENDPOINT, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ token }),
+        body:    JSON.stringify({ cf_turnstile_response: token }),
       });
 
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(`Exchange failed HTTP ${res.status}: ${text.substring(0, 80)}`);
+      }
+
       const data = await res.json();
+      if (!data?.access_token) throw new Error('No access_token in response');
 
-      // Dev-mode token rejection: test tokens don't work with production Amazon proxy.
-      // This is expected in local dev — Qobuz/Deezer will handle audio instead.
-      if (data?.isDev) {
-        console.info('[Turnstile] ℹ️ Dev mode: test token not accepted by Amazon proxy (expected). Qobuz/Deezer will be used.');
-        setStatus('error');
-        // Do NOT fire onError — this is not a real error, just a dev limitation
-        return;
-      }
+      const expiresIn = data.expires_in || 3600;
+      storeJwt(data.access_token, expiresIn);
 
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error || `Exchange failed HTTP ${res.status}`);
-      }
+      // Also tell our backend the JWT is ready (for /api/amazon/status checks)
+      fetch('/api/amazon/notify-jwt', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ expiresIn }),
+      }).catch(() => {});
 
-      console.log(`[Turnstile] ✅ Amazon JWT ready (expires in ${data.expiresIn}s)`);
+      console.log(`[Turnstile] ✅ Amazon JWT ready (expires in ${expiresIn}s)`);
       setStatus('done');
       onReady?.();
 
@@ -104,6 +143,7 @@ export default function AmazonTurnstile({ onReady, onError }) {
       clearTimeout(refreshTimerRef.current);
       refreshTimerRef.current = setTimeout(() => {
         console.log('[Turnstile] JWT expiring soon — re-running challenge');
+        clearStoredJwt();
         setStatus('idle');
         renderWidget();
       }, REFRESH_INTERVAL_MS);
@@ -179,32 +219,26 @@ export default function AmazonTurnstile({ onReady, onError }) {
 
     const init = async () => {
       try {
-        // Check if backend already has a valid JWT (e.g. from another tab's challenge)
-        const res  = await fetch('/api/amazon/status');
-        const data = await res.json();
-
-        if (!mounted) return;
-
-        if (data.hasJwt && !data.isRateLimited && data.jwtExpiresIn > 30) {
-          console.log(`[Turnstile] Backend already has JWT (${data.jwtExpiresIn}s remaining)`);
+        // Check if we already have a valid JWT in sessionStorage (survives hot-reload)
+        const existingJwt = getStoredJwt();
+        if (existingJwt) {
+          console.log('[Turnstile] Found existing JWT in sessionStorage');
           setStatus('done');
           onReady?.();
 
-          // Schedule refresh
-          const refreshIn = Math.max((data.jwtExpiresIn - 30) * 1000, 10_000);
-          refreshTimerRef.current = setTimeout(() => renderWidget(), refreshIn);
+          // Schedule refresh based on remaining TTL
+          const expiry = Number(sessionStorage.getItem(JWT_EXPIRY_KEY) || 0);
+          const remaining = Math.max(expiry - Date.now(), 10_000);
+          refreshTimerRef.current = setTimeout(() => {
+            clearStoredJwt();
+            renderWidget();
+          }, remaining);
           return;
         }
 
-        // Need to run the challenge
-        if (!data.isRateLimited) {
-          renderWidget();
-        } else {
-          console.warn('[Turnstile] Amazon rate limited — skipping challenge');
-          setStatus('error');
-        }
+        // No stored JWT — run the Turnstile challenge
+        renderWidget();
       } catch {
-        // Backend unreachable? Try the challenge anyway
         if (mounted) renderWidget();
       }
     };
